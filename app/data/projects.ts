@@ -11,12 +11,12 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: 1,
-    title: "E-Commerce Platform",
-    description: "A full-stack e-commerce platform built with Next.js, TypeScript, and Stripe integration.",
-    image: "/placeholder-project-1.jpg",
-    tags: ["Next.js", "TypeScript", "Stripe", "PostgreSQL"],
-    githubUrl: "https://github.com/username/ecommerce-platform",
-    liveUrl: "https://ecommerce-demo.vercel.app"
+    title: "FastWeb",
+    description: "AI-powered websites delivered in 72 hours — fast, mobile-ready, and built to convert.",
+    image: "/fastweb.jpg",
+    tags: ["Next.js", "TypeScript"],
+    githubUrl: "https://github.com/andreatsilva/FastWeb-CompanyWebsite",
+    liveUrl: "https://fastweb-phi.vercel.app/",
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ export const projects: Project[] = [
     image: "/placeholder-project-2.jpg",
     tags: ["React", "Node.js", "Socket.io", "MongoDB"],
     githubUrl: "https://github.com/username/task-manager",
-    liveUrl: "https://task-manager-demo.vercel.app"
+    liveUrl: "https://fastweb-phi.vercel.app/"
   },
   {
     id: 3,

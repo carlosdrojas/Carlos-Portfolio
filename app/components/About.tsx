@@ -23,8 +23,8 @@ export default function About() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             About Me
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            I'm a passionate full-stack developer with expertise in creating scalable,
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            I&apos;m a passionate full-stack developer with expertise in creating scalable,
             user-friendly applications using modern technologies.
           </p>
         </motion.div>
@@ -55,7 +55,7 @@ export default function About() {
                 My Journey
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                With over 5 years of experience in web development, I've worked on diverse
+                With over 5 years of experience in web development, I&apos;ve worked on diverse
                 projects ranging from e-commerce platforms to AI-powered applications.
                 I specialize in React, Next.js, Node.js, and cloud technologies.
               </p>
@@ -67,7 +67,7 @@ export default function About() {
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                 I believe in writing clean, maintainable code and creating user experiences
-                that are both beautiful and functional. I'm constantly learning and
+                that are both beautiful and functional. I&apos;m constantly learning and
                 adapting to new technologies to stay at the forefront of web development.
               </p>
             </div>

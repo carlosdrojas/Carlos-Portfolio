@@ -40,7 +40,7 @@ export default function Contact() {
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    alert('Thank you for your message! I\'ll get back to you soon.');
+    alert('Thank you for your message! I&apos;ll get back to you soon.');
     setFormData({ name: '', email: '', message: '' });
     setIsSubmitting(false);
   };
@@ -65,8 +65,8 @@ export default function Contact() {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Get In Touch
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            I'm always open to discussing new opportunities and interesting projects
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            I&apos;m always open to discussing new opportunities and interesting projects
           </p>
         </motion.div>
 
@@ -78,11 +78,11 @@ export default function Contact() {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              Let's Connect
+              Let&apos;s Connect
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-8">
               Whether you have a project in mind, want to collaborate, or just want to say hello,
-              I'd love to hear from you. Feel free to reach out!
+              I&aposd love to hear from you. Feel free to reach out!
             </p>
             
             <div className="space-y-6">
