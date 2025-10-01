@@ -43,7 +43,7 @@ export const projects: Project[] = [
     image: "/Port.jpg",
     tags: ["Next.js", "Framer Motion", "Tailwind CSS", "TypeScript"],
     githubUrl: "https://github.com/carlosdrojas/Carlos-Portfolio",
-    liveUrl: "https://portfolio-demo.vercel.app"
+    liveUrl: "https://carlos-portfolio-beta.vercel.app/"
   },
   {
     id: 5,
