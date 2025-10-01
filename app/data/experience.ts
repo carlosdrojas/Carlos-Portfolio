@@ -18,7 +18,7 @@ export const experiences: Experience[] = [
     location: "San Antonio, TX",
     duration: "January 2024 - August 2024",
     description: "Conducted reinforcement learning research to optimize autonomous agent navigation using MuJoCo physics environments and custom AI algorithms.",
-    technologies: ["Python", "MuJoCo", "Matplotlib", "Numpy", "Numpy", "Tensorboard/Tensorflow"],
+    technologies: ["Python", "MuJoCo", "Matplotlib", "Numpy", "Tensorboard/Tensorflow"],
     achievements: [
       "Trained models across 4 different environments while running 50+ parallel experiments daily, leveraging Python, NumPy, and Matplotlib for data analysis.",
       "Collaborated with a team of 3 researchers to develop 5 novel algorithms in dynamic traffic simulations"
@@ -27,7 +27,7 @@ export const experiences: Experience[] = [
   },
 
   {
-    id: 1,
+    id: 2,
     title: "Cybersecurity Intern",
     company: "UT RSOC",
     location: "Austin, TX",
