@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Code, Database, Cloud, Smartphone, Palette, GitBranch } from 'lucide-react';
+import { Code, Database, GitBranch, Circuit-Board, Mic-Vocal } from 'lucide-react';
 
 const skills = [
   {
@@ -18,7 +18,7 @@ const skills = [
   },
   {
     category: 'Embedded Systems',
-    icon: Cloud,
+    icon: Circuit-Board,
     color: 'from-purple-500 to-pink-500',
     technologies: ['C',
       'Assembly',
@@ -30,7 +30,7 @@ const skills = [
   },
   {
     category: 'ML / AI',
-    icon: Smartphone,
+    icon: Brain,
     color: 'from-orange-500 to-red-500',
     technologies: ['Python',
       'Pandas',
@@ -43,7 +43,7 @@ const skills = [
   },
   {
     category: 'Tools',
-    icon: Palette,
+    icon: Git-Branch,
     color: 'from-pink-500 to-rose-500',
     technologies: [
       'Git',
@@ -57,7 +57,7 @@ const skills = [
   },
   {
     category: 'Soft Skills',
-    icon: Palette,
+    icon: Mic-Vocal,
     color: 'from-pink-500 to-rose-500',
     technologies: [
       'Leadership',
