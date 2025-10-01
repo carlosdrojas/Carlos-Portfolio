@@ -88,7 +88,7 @@ export default function Contact() {
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-8">
               Whether you have a project in mind, want to collaborate, or just want to say hello,
-              I'd love to hear from you. Feel free to reach out!
+              I would love to hear from you. Feel free to reach out!
             </p>
             
             <div className="space-y-6">
