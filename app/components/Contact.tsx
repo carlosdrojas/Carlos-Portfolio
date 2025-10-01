@@ -8,19 +8,19 @@ const contactInfo = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'your.email@example.com',
-    href: 'mailto:your.email@example.com'
+    value: 'rojasdamiancarlos@gmail.com',
+    href: 'mailto:rojasdamiancarlos@gmail.com'
   },
   {
     icon: Phone,
     label: 'Phone',
-    value: '+1 (555) 123-4567',
-    href: 'tel:+15551234567'
+    value: '+1 (956) 326-0367',
+    href: 'tel:+19563260367'
   },
   {
     icon: MapPin,
     label: 'Location',
-    value: 'San Francisco, CA',
+    value: 'Austin, TX',
     href: '#'
   }
 ];
@@ -37,10 +37,16 @@ export default function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Create mailto link with form data
+    const subject = encodeURIComponent(`Portfolio Contact from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
+    );
+    const mailtoLink = `mailto:rojasdamiancarlos@gmail.com?subject=${subject}&body=${body}`;
     
-    alert('Thank you for your message! I&apos;ll get back to you soon.');
+    // Open email client
+    window.location.href = mailtoLink;
+    
     setFormData({ name: '', email: '', message: '' });
     setIsSubmitting(false);
   };
@@ -82,7 +88,7 @@ export default function Contact() {
             </h3>
             <p className="text-gray-600 dark:text-gray-300 mb-8">
               Whether you have a project in mind, want to collaborate, or just want to say hello,
-              I&aposd love to hear from you. Feel free to reach out!
+              I'd love to hear from you. Feel free to reach out!
             </p>
             
             <div className="space-y-6">

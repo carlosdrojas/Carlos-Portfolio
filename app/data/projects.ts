@@ -4,63 +4,63 @@ export interface Project {
   description: string;
   image: string;
   tags: string[];
-  githubUrl: string;
-  liveUrl: string;
+  githubUrl?: string;
+  liveUrl?: string;
 }
 
 export const projects: Project[] = [
   {
     id: 1,
-    title: "FastWeb",
-    description: "AI-powered websites delivered in 72 hours — fast, mobile-ready, and built to convert.",
-    image: "/fastweb.jpg",
-    tags: ["Next.js", "TypeScript"],
-    githubUrl: "https://github.com/andreatsilva/FastWeb-CompanyWebsite",
-    liveUrl: "https://fastweb-phi.vercel.app/",
+    title: "Algorithm Visualizer",
+    description: "An interactive pathfinding visualizer built with Next.js and React, showcasing BFS and DFS algorithms in real time on a dynamic grid.",
+    image: "/AlgoVis.jpg",
+    tags: ["Next.js", "Node.js", "React", "CSS"],
+    githubUrl: "https://github.com/carlosdrojas/AlgoVisualizer",
+    liveUrl: "https://algo-visualizer-sand.vercel.app/",
   },
   {
     id: 2,
-    title: "Task Management App",
-    description: "A collaborative task management application with real-time updates using Socket.io.",
-    image: "/placeholder-project-2.jpg",
-    tags: ["React", "Node.js", "Socket.io", "MongoDB"],
-    githubUrl: "https://github.com/username/task-manager",
-    liveUrl: "https://fastweb-phi.vercel.app/"
+    title: "Space Invaders Clone",
+    description: "A fully playable Space Invaders game implemented in C and Assembly on the MSPM0 microcontroller, featuring a custom PCB and state-driven game logic.",
+    image: "/SpaceInv.jpg",
+    tags: ["C", "Assembly"],
+    // githubUrl: "https://github.com/username/task-manager",
+    // liveUrl: s"https://fastweb-phi.vercel.app/"
   },
   {
     id: 3,
-    title: "Weather Dashboard",
-    description: "A responsive weather dashboard with location-based forecasts and interactive charts.",
-    image: "/placeholder-project-3.jpg",
-    tags: ["React", "OpenWeather API", "Chart.js", "Tailwind CSS"],
-    githubUrl: "https://github.com/username/weather-dashboard",
-    liveUrl: "https://weather-dashboard-demo.vercel.app"
+    title: "Rowdy Park",
+    description: "A 48-hour hackathon action-adventure RPG where players explore a dynamic map and battle enemies, built with Python and Pygame.",
+    image: "/RowdyPark.jpg",
+    tags: ["Python", "Pygame"],
+    githubUrl: "https://github.com/emig23/dino-game",
+    // liveUrl: "https://weather-dashboard-demo.vercel.app"
   },
   {
     id: 4,
     title: "Portfolio Website",
-    description: "A modern, animated portfolio website showcasing my skills and projects.",
-    image: "/placeholder-project-4.jpg",
+    description: "A modern, animated portfolio built with Next.js, Tailwind CSS, and Framer Motion to highlight projects and skills with smooth UI/UX.",
+    image: "/Port.jpg",
     tags: ["Next.js", "Framer Motion", "Tailwind CSS", "TypeScript"],
-    githubUrl: "https://github.com/username/portfolio",
+    githubUrl: "https://github.com/carlosdrojas/Carlos-Portfolio",
     liveUrl: "https://portfolio-demo.vercel.app"
   },
   {
     id: 5,
-    title: "AI Chatbot",
-    description: "An intelligent chatbot powered by OpenAI GPT-4 with custom training capabilities.",
-    image: "/placeholder-project-5.jpg",
-    tags: ["Next.js", "OpenAI", "Prisma", "PostgreSQL"],
-    githubUrl: "https://github.com/username/ai-chatbot",
-    liveUrl: "https://chatbot-demo.vercel.app"
+    title: "Traffic Light FSM",
+    description: "A real-time traffic light controller implemented as a finite state machine on an embedded system, demonstrating low-level programming and timing control.",
+    image: "/TrafficFSM.jpg",
+    tags: ["C", "Assembly"],
+    // githubUrl: "https://github.com/username/ai-chatbot",
+    // liveUrl: "https://chatbot-demo.vercel.app"
   },
   {
     id: 6,
-    title: "Recipe Finder",
-    description: "A recipe discovery platform with ingredient-based search and meal planning features.",
-    image: "/placeholder-project-6.jpg",
-    tags: ["React", "Spoonacular API", "Firebase", "Material-UI"],
-    githubUrl: "https://github.com/username/recipe-finder",
-    liveUrl: "https://recipe-finder-demo.vercel.app"
+    title: "Cyclone Database",
+    description: "A lightweight Java command-line database system utilizing arrays and custom data structures to store, retrieve, and manage cyclone records efficiently.",
+    image: "/Cyclone.jpg",
+    tags: ["Java"],
+    // githubUrl: "https://github.com/username/recipe-finder",
+    // liveUrl: "https://recipe-finder-demo.vercel.app"
   }
 ];

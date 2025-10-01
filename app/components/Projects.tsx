@@ -41,9 +41,9 @@ export default function Projects() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                {/* <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <span className="text-white text-lg font-semibold">Project Image</span>
-                </div>
+                </div> */}
               </div>
               
               <div className="p-6">
@@ -66,6 +66,7 @@ export default function Projects() {
                 </div>
                 
                 <div className="flex space-x-4">
+                {project.githubUrl && (
                   <a
                     href={project.githubUrl}
                     target="_blank"
@@ -75,6 +76,8 @@ export default function Projects() {
                     <Github size={20} />
                     <span>Code</span>
                   </a>
+                )}
+                {project.liveUrl && (
                   <a
                     href={project.liveUrl}
                     target="_blank"
@@ -84,6 +87,7 @@ export default function Projects() {
                     <ExternalLink size={20} />
                     <span>Live Demo</span>
                   </a>
+                )}  
                 </div>
               </div>
             </motion.div>

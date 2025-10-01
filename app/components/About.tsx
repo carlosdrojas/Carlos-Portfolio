@@ -2,11 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { User, Award, Target, Coffee } from 'lucide-react';
+import Image from 'next/image';
 
 const stats = [
-  { icon: Award, label: 'Projects Completed', value: '50+' },
-  { icon: Coffee, label: 'Cups of Coffee', value: '1000+' },
-  { icon: Target, label: 'Happy Clients', value: '25+' },
+  { icon: Award, label: 'Projects Completed', value: '20+' },
+  { icon: Coffee, label: 'Energy Drinks', value: '500+' },
+  { icon: Target, label: 'Years Coding', value: '5+' },
 ];
 
 export default function About() {
@@ -24,8 +25,8 @@ export default function About() {
             About Me
           </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-            I&apos;m a passionate full-stack developer with expertise in creating scalable,
-            user-friendly applications using modern technologies.
+            I&apos;m a passionate full-stack developer and aspiring software engineer focused on
+             building scalable, user-centric applications and leveraging modern technologies to solve real-world problems.
           </p>
         </motion.div>
 
@@ -37,8 +38,13 @@ export default function About() {
             viewport={{ once: true }}
           >
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <User className="w-32 h-32 text-white" />
+              <div className="aspect-square bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl overflow-hidden">
+                <Image
+                  src="/profile.jpg" 
+                  alt="Carlos Rojas"
+                  fill
+                  className="object-cover"
+                />
               </div>
             </div>
           </motion.div>
@@ -55,9 +61,10 @@ export default function About() {
                 My Journey
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                With over 5 years of experience in web development, I&apos;ve worked on diverse
-                projects ranging from e-commerce platforms to AI-powered applications.
-                I specialize in React, Next.js, Node.js, and cloud technologies.
+                Growing up in Laredo, Texas, my passion for technology began through
+                 high school robotics, where I learned to solve complex problems with limited resources and collaborate under pressure.
+                  Those early experiences sparked a curiosity that led me to pursue Electrical and Computer Engineering at UT Austin,
+                   where I&apos;ve spent the past several years building skills across full-stack development, embedded systems, and machine learning.
               </p>
             </div>
 
@@ -66,9 +73,10 @@ export default function About() {
                 My Approach
               </h3>
               <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                I believe in writing clean, maintainable code and creating user experiences
-                that are both beautiful and functional. I&apos;m constantly learning and
-                adapting to new technologies to stay at the forefront of web development.
+                I approach every project with a focus on clarity, scalability, and impact. 
+                I believe great software is intuitive, maintainable, and built to last. I write 
+                clean, modular code, design user-first interfaces, and continually learn new 
+                technologies to create meaningful, high-performance experiences.
               </p>
             </div>
 

@@ -14,31 +14,61 @@ const skills = [
     category: 'Backend',
     icon: Database,
     color: 'from-green-500 to-emerald-500',
-    technologies: ['Node.js', 'Express', 'Python', 'PostgreSQL', 'MongoDB']
+    technologies: ['Node.js', 'Express', 'Python', 'Serverless Function', 'Rest APIs']
   },
   {
-    category: 'DevOps',
+    category: 'Embedded Systems',
     icon: Cloud,
     color: 'from-purple-500 to-pink-500',
-    technologies: ['AWS', 'Docker', 'Kubernetes', 'CI/CD', 'Vercel']
+    technologies: ['C',
+      'Assembly',
+      'MSPM0 Microcontrollers',
+      'Finite State Machines',
+      'PCB Design (KiCad)',
+      'Real-Time Systems',
+      'UART / GPIO',]
   },
   {
-    category: 'Mobile',
+    category: 'ML / AI',
     icon: Smartphone,
     color: 'from-orange-500 to-red-500',
-    technologies: ['React Native', 'Flutter', 'iOS', 'Android']
-  },
-  {
-    category: 'Design',
-    icon: Palette,
-    color: 'from-pink-500 to-rose-500',
-    technologies: ['Figma', 'Adobe XD', 'UI/UX', 'Responsive Design']
+    technologies: ['Python',
+      'Pandas',
+      'NumPy',
+      'Matplotlib',
+      'Stable-Baselines3',
+      'MuJoCo',
+      'Reinforcement Learning',
+      'Algorithm Tuning (PPO, ETPPO)',]
   },
   {
     category: 'Tools',
-    icon: GitBranch,
-    color: 'from-indigo-500 to-purple-500',
-    technologies: ['Git', 'GitHub', 'VS Code', 'Postman', 'Jira']
+    icon: Palette,
+    color: 'from-pink-500 to-rose-500',
+    technologies: [
+      'Git',
+      'GitHub',
+      'VS Code',
+      'Docker',
+      'Vercel',
+      'CI/CD',
+      'Linux CLI',
+      'Figma']
+  },
+  {
+    category: 'Soft Skills',
+    icon: Palette,
+    color: 'from-pink-500 to-rose-500',
+    technologies: [
+      'Leadership',
+      'Team Collaboration',
+      'Public Speaking',
+      'Project Management',
+      'Problem Solving',
+      'Adaptability',
+      'Mentorship',
+      'Strategic Thinking',
+    ]
   }
 ];
 
