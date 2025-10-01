@@ -104,7 +104,7 @@ export default function Resume() {
                   Resume Preview
                 </h4>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Click "Download PDF" for the full version
+                  Click -Download PDF- for the full version
                 </p>
               </div>
               
