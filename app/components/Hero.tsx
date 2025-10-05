@@ -2,6 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import Stack from './Stack'
+
+const images = [
+  { id: 1, img: "/stack-pic-4.jpg" },
+  { id: 2, img: "/stack-pic-3.jpg" },
+  { id: 3, img: "/stack-pic-2.jpeg" },
+  { id: 4, img: "/stack-pic-1.jpg" }
+];
 
 export default function Hero() {
   const scrollToSection = (sectionId: string) => {
@@ -19,6 +27,17 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
+
+          <div className="flex justify-center mb-8 -mt-8 sm:-mt-16">
+            <Stack 
+              randomRotation={false}
+              sensitivity={180}
+              sendToBackOnClick={true}
+              cardDimensions={{ width: 250, height: 250 }}
+              cardsData={images}
+            />
+          </div>
+
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,7 +86,7 @@ export default function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1 }}
-          className="absolute top-100 left-1/2 transform -translate-x-1/2"
+          className="absolute top-150 left-1/2 transform -translate-x-1/2"
         >
           <button
             onClick={() => scrollToSection('#about')}
