@@ -79,5 +79,13 @@ export const projects: Project[] = [
     image: "/placeholder-project-1.jpg",
     tags: ["C", "Unix", "Systems Programming"],
     hasDemo: true,
+  },
+  {
+    id: 9,
+    title: "MetadataEditor",
+    description: "An Electron desktop app for batch-applying metadata to music files. Converts MP3, WAV, and FLAC to M4A, embeds cover art, and auto-numbers tracks via OCR or text input with fuzzy filename matching.",
+    image: "/placeholder-project-2.jpg",
+    tags: ["Electron", "Node.js", "JavaScript"],
+    githubUrl: "https://github.com/carlosdrojas/MetaEditor",
   }
 ];
