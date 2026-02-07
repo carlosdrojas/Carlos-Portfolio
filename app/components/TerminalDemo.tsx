@@ -12,7 +12,7 @@ interface Job {
   state: 'Running' | 'Stopped' | 'Done';
 }
 
-const SIMULATED_FS: FileSystem = {
+const INITIAL_FS: FileSystem = {
   'home': {
     'carlos': {
       'projects': {
@@ -49,9 +49,9 @@ function resolvePath(cwd: string, target: string): string {
   return '/' + cwdParts.join('/');
 }
 
-function getNode(path: string): string | FileSystem | null {
+function getNode(fs: FileSystem, path: string): string | FileSystem | null {
   const parts = path.split('/').filter(Boolean);
-  let current: string | FileSystem = SIMULATED_FS;
+  let current: string | FileSystem = fs;
   for (const part of parts) {
     if (typeof current === 'string') return null;
     if (!(part in current)) return null;
@@ -60,9 +60,32 @@ function getNode(path: string): string | FileSystem | null {
   return current;
 }
 
-function isDir(path: string): boolean {
-  const node = getNode(path);
+function getParentAndName(fs: FileSystem, path: string): { parent: FileSystem; name: string } | null {
+  const parts = path.split('/').filter(Boolean);
+  if (parts.length === 0) return null;
+  const name = parts.pop()!;
+  let current: string | FileSystem = fs;
+  for (const part of parts) {
+    if (typeof current === 'string') return null;
+    if (!(part in current)) return null;
+    current = current[part];
+  }
+  if (typeof current === 'string') return null;
+  return { parent: current, name };
+}
+
+function isDir(fs: FileSystem, path: string): boolean {
+  const node = getNode(fs, path);
   return node !== null && typeof node !== 'string';
+}
+
+function deepClone(obj: FileSystem): FileSystem {
+  const result: FileSystem = {};
+  for (const key in obj) {
+    const val = obj[key];
+    result[key] = typeof val === 'string' ? val : deepClone(val);
+  }
+  return result;
 }
 
 export default function TerminalDemo() {
@@ -77,6 +100,7 @@ export default function TerminalDemo() {
   const [historyIdx, setHistoryIdx] = useState(-1);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [nextJobId, setNextJobId] = useState(1);
+  const [fs, setFs] = useState<FileSystem>(() => deepClone(INITIAL_FS));
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -140,8 +164,18 @@ export default function TerminalDemo() {
     // Handle redirects
     const redirectMatch = cmd.match(/^(.+?)\s*>\s*(\S+)$/);
     if (redirectMatch) {
+      const innerCmd = redirectMatch[1].trim();
       const file = redirectMatch[2];
-      setLines([...newLines, `(output redirected to ${file})`]);
+      const output = executeCmd(innerCmd, cwd);
+      const filePath = resolvePath(cwd, file);
+      const info = getParentAndName(fs, filePath);
+      if (info) {
+        const newFs = deepClone(fs);
+        const parentNode = getParentAndName(newFs, filePath)!;
+        parentNode.parent[parentNode.name] = output.join('\n');
+        setFs(newFs);
+      }
+      setLines(newLines);
       return;
     }
 
@@ -163,6 +197,9 @@ export default function TerminalDemo() {
           '  cd <path>         Change directory',
           '  cat <file>        Display file contents',
           '  echo <text>       Print text to stdout',
+          '  mkdir <dir>       Create a directory',
+          '  touch <file>      Create an empty file',
+          '  rm <file>         Remove a file (-r for directories)',
           '  pwd               Print working directory',
           '  whoami            Print current user',
           '  date              Print current date',
@@ -180,7 +217,7 @@ export default function TerminalDemo() {
 
       case 'ls': {
         const target = args[0] ? resolvePath(currentCwd, args[0]) : currentCwd;
-        const node = getNode(target);
+        const node = getNode(fs, target);
         if (!node) return [`ls: cannot access '${args[0] || target}': No such file or directory`];
         if (typeof node === 'string') return [args[0] || target.split('/').pop() || ''];
         const entries = Object.keys(node);
@@ -197,7 +234,7 @@ export default function TerminalDemo() {
           return [];
         }
         const target = resolvePath(currentCwd, args[0]);
-        if (!isDir(target)) return [`cd: ${args[0]}: No such file or directory`];
+        if (!isDir(fs, target)) return [`cd: ${args[0]}: No such file or directory`];
         setCwd(target);
         return [];
       }
@@ -205,7 +242,7 @@ export default function TerminalDemo() {
       case 'cat': {
         if (!args[0]) return ['cat: missing operand'];
         const target = resolvePath(currentCwd, args[0]);
-        const node = getNode(target);
+        const node = getNode(fs, target);
         if (!node) return [`cat: ${args[0]}: No such file or directory`];
         if (typeof node !== 'string') return [`cat: ${args[0]}: Is a directory`];
         return node.split('\n');
@@ -250,20 +287,57 @@ export default function TerminalDemo() {
       case 'man':
         return [`No manual entry for ${args[0] || 'unknown'}`, 'Try "help" for available commands.'];
 
-      case 'mkdir':
-        return [`mkdir: simulated filesystem is read-only`];
+      case 'mkdir': {
+        if (!args[0]) return ['mkdir: missing operand'];
+        const target = resolvePath(currentCwd, args[0]);
+        if (getNode(fs, target)) return [`mkdir: cannot create directory '${args[0]}': File exists`];
+        const info = getParentAndName(fs, target);
+        if (!info) return [`mkdir: cannot create directory '${args[0]}': No such file or directory`];
+        if (typeof info.parent[info.name] === 'string') return [`mkdir: cannot create directory '${args[0]}': Not a directory`];
+        const newFs = deepClone(fs);
+        const parentNode = getParentAndName(newFs, target)!;
+        parentNode.parent[parentNode.name] = {};
+        setFs(newFs);
+        return [];
+      }
 
-      case 'touch':
-        return [`touch: simulated filesystem is read-only`];
+      case 'touch': {
+        if (!args[0]) return ['touch: missing operand'];
+        const target = resolvePath(currentCwd, args[0]);
+        const existing = getNode(fs, target);
+        if (existing !== null) return []; // touch on existing file is a no-op
+        const info = getParentAndName(fs, target);
+        if (!info) return [`touch: cannot touch '${args[0]}': No such file or directory`];
+        const newFs = deepClone(fs);
+        const parentNode = getParentAndName(newFs, target)!;
+        parentNode.parent[parentNode.name] = '';
+        setFs(newFs);
+        return [];
+      }
 
-      case 'rm':
-        return [`rm: simulated filesystem is read-only`];
+      case 'rm': {
+        if (!args[0]) return ['rm: missing operand'];
+        const isRecursive = args.includes('-r') || args.includes('-rf') || args.includes('-fr');
+        const fileArgs = args.filter(a => !a.startsWith('-'));
+        if (fileArgs.length === 0) return ['rm: missing operand'];
+        const target = resolvePath(currentCwd, fileArgs[0]);
+        const node = getNode(fs, target);
+        if (!node) return [`rm: cannot remove '${fileArgs[0]}': No such file or directory`];
+        if (typeof node !== 'string' && !isRecursive) return [`rm: cannot remove '${fileArgs[0]}': Is a directory`];
+        const info = getParentAndName(fs, target);
+        if (!info) return [`rm: cannot remove '${fileArgs[0]}': No such file or directory`];
+        const newFs = deepClone(fs);
+        const parentNode = getParentAndName(newFs, target)!;
+        delete parentNode.parent[parentNode.name];
+        setFs(newFs);
+        return [];
+      }
 
       case 'grep': {
         if (args.length < 2) return ['grep: missing arguments. Usage: grep <pattern> <file>'];
         const pattern = args[0];
         const filePath = resolvePath(currentCwd, args[1]);
-        const fileNode = getNode(filePath);
+        const fileNode = getNode(fs, filePath);
         if (!fileNode || typeof fileNode !== 'string') return [`grep: ${args[1]}: No such file`];
         const matching = fileNode.split('\n').filter(line => line.includes(pattern));
         return matching.length > 0 ? matching : [];
@@ -272,7 +346,7 @@ export default function TerminalDemo() {
       case 'wc': {
         if (!args[0]) return ['wc: missing operand'];
         const filePath = resolvePath(currentCwd, args[0]);
-        const fileNode = getNode(filePath);
+        const fileNode = getNode(fs, filePath);
         if (!fileNode || typeof fileNode !== 'string') return [`wc: ${args[0]}: No such file`];
         const lineCount = fileNode.split('\n').length;
         const wordCount = fileNode.split(/\s+/).filter(Boolean).length;
@@ -283,7 +357,7 @@ export default function TerminalDemo() {
       case 'head': {
         if (!args[0]) return ['head: missing operand'];
         const filePath = resolvePath(currentCwd, args[0]);
-        const fileNode = getNode(filePath);
+        const fileNode = getNode(fs, filePath);
         if (!fileNode || typeof fileNode !== 'string') return [`head: ${args[0]}: No such file`];
         return fileNode.split('\n').slice(0, 10);
       }
