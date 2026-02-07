@@ -62,5 +62,13 @@ export const projects: Project[] = [
     tags: ["Java"],
     // githubUrl: "https://github.com/username/recipe-finder",
     // liveUrl: "https://recipe-finder-demo.vercel.app"
+  },
+  {
+    id: 7,
+    title: "FormCoach",
+    description: "A real-time AI-powered vertical jump form analyzer that runs entirely in the browser. Uses MediaPipe Pose estimation to detect body landmarks, automatically segment jump phases via a state machine, compute biomechanical metrics (knee/hip angles, trunk lean, valgus deviation, arm swing timing, jump height), and deliver personalized coaching feedback with actionable drills. Supports standing and approach vertical jumps, includes skeleton-overlay replay with phase markers, and persists rep history locally — all client-side with zero data leaving your device.",
+    image: "/FormCoach.jpg",
+    tags: ["Next.js", "TypeScript", "MediaPipe", "React"],
+    liveUrl: "https://form-coach.vercel.app/",
   }
 ];
