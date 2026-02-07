@@ -6,6 +6,7 @@ export interface Project {
   tags: string[];
   githubUrl?: string;
   liveUrl?: string;
+  hasDemo?: boolean;
 }
 
 export const projects: Project[] = [
@@ -70,5 +71,13 @@ export const projects: Project[] = [
     image: "/FormCoach.jpg",
     tags: ["Next.js", "TypeScript", "MediaPipe", "React"],
     liveUrl: "https://form-coach.vercel.app/",
+  },
+  {
+    id: 8,
+    title: "Yash Shell",
+    description: "A custom Unix shell built from scratch in C, featuring process creation with fork/exec, piping, I/O redirection, background process execution, and full job control with fg/bg and signal handling.",
+    image: "/placeholder-project-1.jpg",
+    tags: ["C", "Unix", "Systems Programming"],
+    hasDemo: true,
   }
 ];

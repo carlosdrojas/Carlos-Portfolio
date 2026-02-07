@@ -1,11 +1,15 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ExternalLink, Github } from 'lucide-react';
+import { ExternalLink, Github, Terminal } from 'lucide-react';
 import { projects } from '../data/projects';
+import ShellDemoModal from './ShellDemoModal';
 
 export default function Projects() {
+  const [demoOpen, setDemoOpen] = useState(false);
+
   return (
     <section id="projects" className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,11 +45,8 @@ export default function Projects() {
                   fill
                   className="object-cover"
                 />
-                {/* <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                  <span className="text-white text-lg font-semibold">Project Image</span>
-                </div> */}
               </div>
-              
+
               <div className="p-6">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                   {project.title}
@@ -53,7 +54,7 @@ export default function Projects() {
                 <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
                   {project.description}
                 </p>
-                
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag) => (
                     <span
@@ -64,7 +65,7 @@ export default function Projects() {
                     </span>
                   ))}
                 </div>
-                
+
                 <div className="flex space-x-4">
                 {project.githubUrl && (
                   <a
@@ -87,13 +88,24 @@ export default function Projects() {
                     <ExternalLink size={20} />
                     <span>Live Demo</span>
                   </a>
-                )}  
+                )}
+                {project.hasDemo && (
+                  <button
+                    onClick={() => setDemoOpen(true)}
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors"
+                  >
+                    <Terminal size={20} />
+                    <span>Try Demo</span>
+                  </button>
+                )}
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
+
+      <ShellDemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
     </section>
   );
 }
