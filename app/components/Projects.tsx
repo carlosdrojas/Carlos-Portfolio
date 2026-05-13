@@ -36,8 +36,14 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="project-card relative bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+                e.currentTarget.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+              }}
             >
+              <div className="spotlight" />
               <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
                 <Image
                   src={project.image}

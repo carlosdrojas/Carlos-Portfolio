@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import Stack from './Stack'
@@ -11,7 +12,32 @@ const images = [
   { id: 4, img: "/stack-pic-1.jpg" }
 ];
 
+const roles = ['Full-stack developer', 'Systems programmer', 'ML engineer'];
+
 export default function Hero() {
+  const [roleIndex, setRoleIndex] = useState(0);
+  const [displayed, setDisplayed] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const role = roles[roleIndex];
+    let t: ReturnType<typeof setTimeout>;
+    if (!deleting && displayed === role) {
+      t = setTimeout(() => setDeleting(true), 2000);
+    } else if (deleting && displayed === '') {
+      setDeleting(false);
+      setRoleIndex((i) => (i + 1) % roles.length);
+    } else {
+      t = setTimeout(() => {
+        setDisplayed(deleting
+          ? role.slice(0, displayed.length - 1)
+          : role.slice(0, displayed.length + 1)
+        );
+      }, deleting ? 40 : 70);
+    }
+    return () => clearTimeout(t);
+  }, [displayed, deleting, roleIndex]);
+
   const scrollToSection = (sectionId: string) => {
     const element = document.querySelector(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
@@ -19,8 +45,8 @@ export default function Hero() {
 
   return (
     <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
-      
+      <div className="aurora-bg absolute inset-0" />
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -29,7 +55,7 @@ export default function Hero() {
         >
 
           <div className="flex justify-center mb-8 -mt-8 sm:-mt-16">
-            <Stack 
+            <Stack
               randomRotation={false}
               sensitivity={180}
               sendToBackOnClick={true}
@@ -49,15 +75,18 @@ export default function Hero() {
               Carlos Rojas
             </span>
           </motion.h1>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
             className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto"
           >
-            Full-stack developer and aspiring software engineer passionate about building scalable 
-            applications and applying machine learning to real-world problems. 
+            <span className="font-semibold text-blue-600 dark:text-blue-400">
+              {displayed}
+              <span className="cursor-blink ml-0.5">|</span>
+            </span>
+            {' '}passionate about building scalable applications and applying machine learning to real-world problems.
           </motion.p>
           
           <motion.div
