@@ -21,7 +21,7 @@ export default function Resume() {
   };
 
   return (
-    <section id="resume" className="py-20 bg-white dark:bg-gray-900">
+    <section id="resume" className="py-20 bg-orange-50 dark:bg-stone-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,11 +46,11 @@ export default function Resume() {
           className="max-w-4xl mx-auto"
         >
           {/* Resume Actions */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 mb-8">
+          <div className="bg-amber-50 dark:bg-stone-800 rounded-xl p-8 mb-8">
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <div className="text-center sm:text-left">
                 <div className="flex items-center justify-center sm:justify-start mb-3">
-                  <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 mr-3" />
+                  <FileText className="w-8 h-8 text-orange-500 dark:text-amber-400 mr-3" />
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                     Carlos Rojas - Resume
                   </h3>
@@ -63,7 +63,7 @@ export default function Resume() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={handleView}
-                  className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center px-6 py-3 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <Eye className="w-5 h-5 mr-2" />
                   {isViewing ? 'Hide' : 'View'} Resume
@@ -71,7 +71,7 @@ export default function Resume() {
                 
                 <button
                   onClick={handleDownload}
-                  className="flex items-center justify-center px-6 py-3 border-2 border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400 rounded-lg font-semibold hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-white transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center px-6 py-3 border-2 border-orange-500 text-orange-500 dark:border-amber-400 dark:text-amber-400 rounded-lg font-semibold hover:bg-orange-500 hover:text-white dark:hover:bg-amber-400 dark:hover:text-white transition-all duration-200 transform hover:scale-105"
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Download PDF
@@ -81,7 +81,7 @@ export default function Resume() {
                   href="/resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-all duration-200 transform hover:scale-105"
+                  className="flex items-center justify-center px-6 py-3 bg-stone-700 text-white rounded-lg font-semibold hover:bg-stone-600 transition-all duration-200 transform hover:scale-105"
                 >
                   <ExternalLink className="w-5 h-5 mr-2" />
                   Open in New Tab
@@ -97,9 +97,9 @@ export default function Resume() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden"
+              className="bg-white dark:bg-stone-800 rounded-xl shadow-lg overflow-hidden"
             >
-              <div className="p-4 bg-gray-100 dark:bg-gray-700 border-b">
+              <div className="p-4 bg-gray-100 dark:bg-stone-700 border-b">
                 <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                   Resume Preview
                 </h4>

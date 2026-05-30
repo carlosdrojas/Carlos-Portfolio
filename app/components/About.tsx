@@ -12,7 +12,7 @@ const stats = [
 
 export default function About() {
   return (
-    <section id="about" className="py-20 bg-white dark:bg-gray-900">
+    <section id="about" className="py-20 bg-amber-50 dark:bg-stone-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -38,9 +38,9 @@ export default function About() {
             viewport={{ once: true }}
           >
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl overflow-hidden">
+              <div className="aspect-square bg-gradient-to-br from-orange-500 to-amber-400 rounded-2xl overflow-hidden">
                 <Image
-                  src="/profile.jpg" 
+                  src="/Carlos_image.jpeg" 
                   alt="Carlos Rojas"
                   fill
                   className="object-cover"
@@ -90,8 +90,8 @@ export default function About() {
                   viewport={{ once: true }}
                   className="text-center"
                 >
-                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
-                    <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+                  <div className="bg-gray-100 dark:bg-stone-800 rounded-lg p-4">
+                    <stat.icon className="w-8 h-8 text-orange-500 dark:text-amber-400 mx-auto mb-2" />
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">
                       {stat.value}
                     </div>

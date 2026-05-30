@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fffbeb;
   --foreground: #171717;
 }
 
@@ -17,7 +17,7 @@
 }
 
 .aurora-bg {
-  background: linear-gradient(-45deg, #eff6ff, #faf5ff, #ecfeff, #f0fdf4, #eff6ff);
+  background: linear-gradient(-45deg, #fff7ed, #fffbeb, #fef3c7, #fef9c3, #fff7ed);
   background-size: 300% 300%;
   animation: aurora 12s ease infinite;
 }
@@ -32,7 +32,7 @@
   border-radius: inherit;
   opacity: 0;
   transition: opacity 0.3s ease;
-  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139, 92, 246, 0.13), transparent 70%);
+  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(249, 115, 22, 0.13), transparent 70%);
   pointer-events: none;
   z-index: 10;
 }
@@ -55,7 +55,7 @@
   }
 
   .aurora-bg {
-    background: linear-gradient(-45deg, #0f172a, #1e1b4b, #0c1a2e, #131026, #0f172a);
+    background: linear-gradient(-45deg, #1c1008, #1f1505, #120c02, #1a1005, #1c1008);
     background-size: 300% 300%;
     animation: aurora 12s ease infinite;
   }

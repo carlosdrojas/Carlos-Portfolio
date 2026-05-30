@@ -11,7 +11,7 @@ export default function Projects() {
   const [demoOpen, setDemoOpen] = useState(false);
 
   return (
-    <section id="projects" className="py-20 bg-white dark:bg-gray-900">
+    <section id="projects" className="py-20 bg-orange-50 dark:bg-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -36,7 +36,7 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
-              className="project-card relative bg-gray-50 dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              className="project-card relative bg-orange-50 dark:bg-stone-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 e.currentTarget.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
@@ -44,7 +44,7 @@ export default function Projects() {
               }}
             >
               <div className="spotlight" />
-              <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600">
+              <div className="relative h-48 bg-gradient-to-br from-orange-500 to-amber-400">
                 <Image
                   src={project.image}
                   alt={project.title}
@@ -65,7 +65,7 @@ export default function Projects() {
                   {project.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded text-sm"
+                      className="px-2 py-1 bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 rounded text-sm"
                     >
                       {tag}
                     </span>
@@ -78,7 +78,7 @@ export default function Projects() {
                     href={project.githubUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-amber-400 transition-colors"
                   >
                     <Github size={20} />
                     <span>Code</span>
@@ -89,7 +89,7 @@ export default function Projects() {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-amber-400 transition-colors"
                   >
                     <ExternalLink size={20} />
                     <span>Live Demo</span>
@@ -98,7 +98,7 @@ export default function Projects() {
                 {project.hasDemo && (
                   <button
                     onClick={() => setDemoOpen(true)}
-                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-green-500 dark:hover:text-green-400 transition-colors"
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-amber-400 transition-colors"
                   >
                     <Terminal size={20} />
                     <span>Try Demo</span>

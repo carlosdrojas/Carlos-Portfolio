@@ -59,7 +59,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-50 dark:bg-gray-800">
+    <section id="contact" className="py-20 bg-amber-50 dark:bg-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -101,14 +101,14 @@ export default function Contact() {
                   viewport={{ once: true }}
                   className="flex items-center space-x-4"
                 >
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                    <info.icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
+                    <info.icon className="w-6 h-6 text-orange-500 dark:text-amber-400" />
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white">{info.label}</p>
                     <a
                       href={info.href}
-                      className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-amber-400 transition-colors"
                     >
                       {info.value}
                     </a>
@@ -137,7 +137,7 @@ export default function Contact() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-stone-700 text-gray-900 dark:text-white"
                 placeholder="Your Name"
               />
             </div>
@@ -153,7 +153,7 @@ export default function Contact() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-stone-700 text-gray-900 dark:text-white"
                 placeholder="your.email@example.com"
               />
             </div>
@@ -169,7 +169,7 @@ export default function Contact() {
                 onChange={handleChange}
                 required
                 rows={5}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-stone-700 text-gray-900 dark:text-white"
                 placeholder="Tell me about your project..."
               />
             </div>
@@ -177,7 +177,7 @@ export default function Contact() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-400 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-amber-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
