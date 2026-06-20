@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { experiences } from '../data/experience';
 import { Briefcase, MapPin, Calendar, Award } from 'lucide-react';
 
@@ -59,7 +60,16 @@ export default function Experience() {
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       {experience.title}
                     </h3>
-                    <h4 className="text-lg font-semibold text-orange-500 dark:text-amber-400 mb-2">
+                    <h4 className="text-lg font-semibold text-orange-500 dark:text-amber-400 mb-2 flex items-center gap-2">
+                      {experience.logo && (
+                        <Image
+                          src={experience.logo}
+                          alt={`${experience.company} logo`}
+                          width={40}
+                          height={40}
+                          className="object-contain rounded"
+                        />
+                      )}
                       {experience.company}
                     </h4>
                     

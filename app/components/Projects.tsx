@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ExternalLink, Github, Terminal } from 'lucide-react';
+import { ExternalLink, Github, Terminal, Play } from 'lucide-react';
 import { projects } from '../data/projects';
 import ShellDemoModal from './ShellDemoModal';
 
@@ -93,6 +93,17 @@ export default function Projects() {
                   >
                     <ExternalLink size={20} />
                     <span>Live Demo</span>
+                  </a>
+                )}
+                {project.videoUrl && (
+                  <a
+                    href={project.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-orange-500 dark:hover:text-amber-400 transition-colors"
+                  >
+                    <Play size={20} />
+                    <span>Watch</span>
                   </a>
                 )}
                 {project.hasDemo && (

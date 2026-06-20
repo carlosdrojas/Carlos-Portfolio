@@ -6,6 +6,7 @@ export interface Project {
   tags: string[];
   githubUrl?: string;
   liveUrl?: string;
+  videoUrl?: string;
   hasDemo?: boolean;
 }
 
@@ -17,6 +18,14 @@ export const projects: Project[] = [
     image: "/FormCoach.png",
     tags: ["Next.js", "TypeScript", "MediaPipe", "React"],
     liveUrl: "https://form-coach.vercel.app/",
+  },
+  {
+    id: 10,
+    title: "PathSong",
+    description: "A first-person navigation simulator for visually impaired users that guides an agent through a room using only directional audio cues — a sub-bass bearing tone that pans left/right to indicate heading, and a proximity chirp that speeds up as the target approaches. Supports a full 24-trial participant study logging per-frame telemetry at ~60 Hz, testing 11 audio conditions across 1D and 8×8 m 2D environments. Extended with AI2-THOR 3D navigation and live YOLOv8 object detection. (ECE 460J — Spring 2026)",
+    image: "/pathsong.png",
+    tags: ["Python", "Pygame", "PyOpenAL", "YOLOv8", "AI2-THOR"],
+    videoUrl: "https://youtu.be/jcd2gCReXcY",
   },
   {
     id: 2,

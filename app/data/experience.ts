@@ -8,6 +8,7 @@ export interface Experience {
   technologies?: string[];
   achievements?: string[];
   type: 'work' | 'internship' | 'project' | 'education';
+  logo?: string;
 }
 
 export const experiences: Experience[] = [
@@ -15,6 +16,7 @@ export const experiences: Experience[] = [
     id: 3,
     title: "Software Development Engineer Intern",
     company: "Amazon",
+    logo: "/AmazonLogo.png",
     location: "Seattle, WA",
     duration: "May 2026 - Present",
     description: "Working on the Devices team under Amazon Photos curation, building automated systems that serve millions of customers.",
@@ -29,8 +31,9 @@ export const experiences: Experience[] = [
     id: 2,
     title: "Cybersecurity Intern",
     company: "UT RSOC",
+    logo: "/ISOEmblem--White.png",
     location: "Austin, TX",
-    duration: "April 2025 - Present",
+    duration: "April 2025 - August 2025",
     description: "Supported real-time security operations for the UT Austin network.",
     technologies: ["Linux CLI", "Python", "Bash", "Network Protocols", "Splunk"],
     achievements: [
@@ -43,6 +46,7 @@ export const experiences: Experience[] = [
     id: 1,
     title: "Machine Learning Research Intern",
     company: "UTSA Unmanned Systems Lab",
+    logo: "/utsa.png",
     location: "San Antonio, TX",
     duration: "January 2024 - August 2024",
     description: "Conducted reinforcement learning research to optimize autonomous agent navigation using MuJoCo physics environments and custom AI algorithms.",
