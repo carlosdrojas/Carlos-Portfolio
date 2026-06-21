@@ -36,14 +36,14 @@ export default function Experience() {
             >
               {/* Timeline line */}
               {index < experiences.length - 1 && (
-                <div className="absolute left-1/2 top-20 w-0.5 h-full bg-orange-200 dark:bg-orange-800 transform -translate-x-1/2" />
+                <div className="hidden md:block absolute left-1/2 top-20 w-0.5 h-full bg-orange-200 dark:bg-orange-800 transform -translate-x-1/2" />
               )}
-              
+
               {/* Timeline dot */}
-              <div className="absolute left-1/2 top-8 w-4 h-4 bg-orange-500 rounded-full transform -translate-x-1/2 z-10" />
-              
-              <div className={`flex ${index % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                <div className={`w-5/12 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
+              <div className="hidden md:block absolute left-1/2 top-8 w-4 h-4 bg-orange-500 rounded-full transform -translate-x-1/2 z-10" />
+
+              <div className={`flex ${index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}`}>
+                <div className={`w-full md:w-5/12 ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'}`}>
                   <div className="bg-amber-50 dark:bg-stone-700 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow border border-orange-100 dark:border-stone-600">
                     <div className="flex items-center mb-3">
                       <Briefcase className="w-5 h-5 text-orange-500 mr-2" />
