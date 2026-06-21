@@ -65,7 +65,7 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden">
+    <section id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16 md:pt-0">
       <div className="aurora-bg absolute inset-0" />
       {particles.map((p) => (
         <motion.div
@@ -101,7 +101,7 @@ export default function Hero() {
           transition={{ duration: 0.8 }}
         >
 
-          <div className="flex justify-center mb-8 -mt-8 sm:-mt-16">
+          <div className="flex justify-center mb-8 sm:-mt-16">
             <Stack
               randomRotation={false}
               sensitivity={180}
