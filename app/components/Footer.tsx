@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const socialLinks = [
   { name: 'GitHub', icon: Github, url: 'https://github.com/carlosdrojas' },
-  { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/in/carlosdrojas' },
+  { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/in/carlos-d-rojas/' },
   { name: 'Twitter', icon: Twitter, url: 'https://x.com/carlosroja5_' },
   { name: 'Email', icon: Mail, url: 'mailto:rojasdamiancarlos@gmail.com' },
 ];
