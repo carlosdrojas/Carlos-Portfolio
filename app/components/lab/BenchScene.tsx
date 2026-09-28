@@ -7,7 +7,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { HotContext } from './toon';
-import { Breadboard, Clipboard, LaunchPad, Laptop, Oscilloscope, Pegboard, ProbeLead, Props, Room } from './Models';
+import { Breadboard, Clipboard, LaunchPad, Laptop, Oscilloscope, Pegboard, Phone, ProbeLead, Props, Room } from './Models';
 import { SPOT_ORDER, VIEWS, type SpotId } from './spots';
 
 interface BenchSceneProps {
@@ -16,16 +16,15 @@ interface BenchSceneProps {
   onHover: (id: SpotId | null) => void;
   onSelect: (id: SpotId | null) => void;
   reduceMotion: boolean;
-  // Horizontal pan along the bench, set by dragging (world units).
-  panRef: RefObject<number>;
 }
 
 type GroupRefs = Record<SpotId, RefObject<THREE.Group | null>>;
 
-export default function BenchScene({ active, hovered, onHover, onSelect, reduceMotion, panRef }: BenchSceneProps) {
+export default function BenchScene({ active, hovered, onHover, onSelect, reduceMotion }: BenchSceneProps) {
   const refs: GroupRefs = {
     pegboard: useRef<THREE.Group>(null),
     laptop: useRef<THREE.Group>(null),
+    phone: useRef<THREE.Group>(null),
     scope: useRef<THREE.Group>(null),
     launchpad: useRef<THREE.Group>(null),
     clipboard: useRef<THREE.Group>(null),
@@ -64,6 +63,7 @@ export default function BenchScene({ active, hovered, onHover, onSelect, reduceM
         <Room />
         {spot('pegboard', [0, 2.35, -1.7], 0, <Pegboard />)}
         {spot('laptop', [-1.75, 1.012, 0.35], 0.38, <Laptop />)}
+        {spot('phone', [-0.85, 1.012, 1.12], 0.35, <Phone />)}
         {spot('scope', [1.75, 1.012, -0.72], -0.38, <Oscilloscope />)}
         {spot('launchpad', [0.5, 1.012, 0.62], -0.18, <LaunchPad />)}
         {spot('clipboard', [2.1, 1.012, 0.78], -0.42, <Clipboard />)}
@@ -73,7 +73,7 @@ export default function BenchScene({ active, hovered, onHover, onSelect, reduceM
         <ProbeLead />
         <Props />
       </Suspense>
-      <CameraRig active={active} refs={refs} reduceMotion={reduceMotion} panRef={panRef} />
+      <CameraRig active={active} refs={refs} reduceMotion={reduceMotion} />
       <PixelPass />
       <IntroSweep onHover={onHover} skip={reduceMotion} />
     </Canvas>
@@ -108,8 +108,6 @@ function Hotspot({ id, groupRef, position, rotationY, hot, onHover, onSelect, ch
       onPointerOut={out}
       onClick={(e) => {
         e.stopPropagation();
-        // A drag to pan the bench also ends in a click; ignore those.
-        if (e.delta > 8) return;
         onSelect(id);
       }}
     >
@@ -129,15 +127,28 @@ function IntroSweep({ onHover, skip }: { onHover: (id: SpotId | null) => void; s
   return null;
 }
 
+const PORTRAIT_FOV = 55;
+// Half the width of everything on the bench, soldering station to toolbox.
+const BENCH_HALF_WIDTH = 3.25;
+
 function homeView(aspect: number) {
-  if (aspect < 0.8) return { pos: new THREE.Vector3(0, 5.9, 6.4), look: new THREE.Vector3(0, 1.45, -0.2) };
+  if (aspect < 0.8) {
+    // Portrait: back off along a steep, downward line until the whole bench
+    // fits the screen width. A wider lens would fit it closer but would warp
+    // the objects at the edges.
+    const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(PORTRAIT_FOV / 2)) * aspect);
+    const dist = BENCH_HALF_WIDTH / Math.tan(halfH);
+    const look = new THREE.Vector3(0, 1.3, 0.05);
+    const dir = new THREE.Vector3(0, 0.8, 0.6).normalize();
+    return { pos: look.clone().addScaledVector(dir, dist), look };
+  }
   if (aspect < 1.3) return { pos: new THREE.Vector3(0, 3.7, 6.9), look: new THREE.Vector3(0, 1.4, -0.2) };
   return { pos: new THREE.Vector3(0, 3.2, 5.5), look: new THREE.Vector3(0, 1.45, -0.25) };
 }
 
 // Eases the camera toward the selected object and shifts the view so the object
 // stays visible beside the open panel.
-function CameraRig({ active, refs, reduceMotion, panRef }: { active: SpotId | null; refs: GroupRefs; reduceMotion: boolean; panRef: RefObject<number> }) {
+function CameraRig({ active, refs, reduceMotion }: { active: SpotId | null; refs: GroupRefs; reduceMotion: boolean }) {
   const { camera, size, pointer } = useThree();
   const pos = useRef<THREE.Vector3 | null>(null);
   const look = useRef(new THREE.Vector3());
@@ -146,7 +157,7 @@ function CameraRig({ active, refs, reduceMotion, panRef }: { active: SpotId | nu
 
   useEffect(() => {
     const cam = camera as THREE.PerspectiveCamera;
-    cam.fov = size.width / size.height < 0.8 ? 50 : 38;
+    cam.fov = size.width / size.height < 0.8 ? PORTRAIT_FOV : 38;
     cam.updateProjectionMatrix();
   }, [camera, size]);
 
@@ -165,8 +176,6 @@ function CameraRig({ active, refs, reduceMotion, panRef }: { active: SpotId | nu
     } else {
       target.pos.copy(home.pos);
       target.look.copy(home.look);
-      target.pos.x += panRef.current;
-      target.look.x += panRef.current;
     }
     if (!pos.current) {
       pos.current = target.pos.clone();

@@ -84,6 +84,44 @@ export function GamePanel() {
   return <InvadersGame />;
 }
 
+export function AboutMePanel({ onOpen }: { onOpen: (id: SpotId) => void }) {
+  return (
+    <div className="flex flex-col gap-5">
+      <Image src="/Carlos_image.jpeg" alt="Carlos at a UT Austin ECE event" width={880} height={660} className="w-full aspect-[4/3] object-cover border-2 border-[#1D2127]" />
+      <div className="grid grid-cols-3 gap-2 text-sm">
+        {[
+          ['Hometown', 'Laredo, TX'],
+          ['School', 'UT Austin, ECE'],
+          ['Now', 'Amazon, Seattle'],
+        ].map(([k, v]) => (
+          <div key={k} className="flex flex-col gap-0.5 bg-[#EDE9E0] px-3 py-2">
+            <span className="text-xs text-[#5B6270]">{k}</span>
+            <span className="font-semibold">{v}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-pixel text-lg">My journey</h3>
+        <p className="text-[15px] leading-relaxed">
+          Growing up in Laredo, Texas, I got into technology through high school robotics, where I learned to solve complex problems with limited resources and collaborate under pressure. That curiosity led me to electrical and computer engineering at UT Austin, where I’ve spent the past several years building skills across full-stack development, embedded systems, and machine learning.
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h3 className="font-pixel text-lg">My approach</h3>
+        <p className="text-[15px] leading-relaxed">
+          I approach every project with a focus on clarity, scalability, and impact. Great software is intuitive, maintainable, and built to last, whether it runs on a microcontroller or in a browser.
+        </p>
+      </div>
+      <p className="text-sm text-[#5B6270]">
+        Energy drinks downed so far: 500+. One of them is on the bench.
+      </p>
+      <button type="button" onClick={() => onOpen('clipboard')} className="self-start px-4 py-2.5 font-pixel border-2 border-[#1D2127] bg-[#E8C547] shadow-[3px_3px_0_#1D2127] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#1D2127] transition-transform">
+        Resume and contact
+      </button>
+    </div>
+  );
+}
+
 const CONTACT = [
   { label: 'Email', value: 'rojasdamiancarlos@gmail.com', href: 'mailto:rojasdamiancarlos@gmail.com' },
   { label: 'LinkedIn', value: 'carlos-d-rojas', href: 'https://www.linkedin.com/in/carlos-d-rojas/' },
@@ -91,18 +129,23 @@ const CONTACT = [
   { label: 'Resume', value: 'PDF', href: '/resume.pdf' },
 ];
 
-export function AboutPanel() {
+export function ContactPanel() {
   return (
     <div className="flex flex-col gap-5">
-      <div className="grid grid-cols-[96px_minmax(0,1fr)] gap-4 items-center">
-        <Image src="/CarlosRojasHeadshot_justhead.png" alt="Carlos Rojas" width={192} height={192} className="w-24 h-24 object-cover border-2 border-[#1D2127] [image-rendering:pixelated]" />
-        <p className="text-[15px] leading-relaxed">
-          Growing up in Laredo, Texas, I got into technology through high school robotics, solving hard problems with limited parts and a team under pressure. Now I study electrical and computer engineering at UT Austin.
-        </p>
+      <div className="flex flex-col gap-2">
+        {CONTACT.map((c) => (
+          <a
+            key={c.label}
+            href={c.href}
+            target={c.href.startsWith('http') || c.href.endsWith('.pdf') ? '_blank' : undefined}
+            rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            className="flex justify-between gap-3 px-4 py-3 border-2 border-[#1D2127] bg-white shadow-[3px_3px_0_#1D2127] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#1D2127] transition-transform"
+          >
+            <span className="font-pixel">{c.label}</span>
+            <span className="text-[#5B6270] truncate">{c.value}</span>
+          </a>
+        ))}
       </div>
-      <p className="text-[15px] leading-relaxed">
-        I care about software that is clear, maintainable, and built to last, whether it runs on a microcontroller or in a browser.
-      </p>
       <div className="flex flex-col gap-3">
         {skills.map((s) => (
           <div key={s.category}>
@@ -111,20 +154,6 @@ export function AboutPanel() {
               {s.technologies.map((t) => <span key={t} className={tag}>{t}</span>)}
             </div>
           </div>
-        ))}
-      </div>
-      <div className="flex flex-col gap-2">
-        {CONTACT.map((c) => (
-          <a
-            key={c.label}
-            href={c.href}
-            target={c.href.startsWith('http') ? '_blank' : undefined}
-            rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-            className="flex justify-between gap-3 px-4 py-3 border-2 border-[#1D2127] bg-white shadow-[3px_3px_0_#1D2127] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0_#1D2127] transition-transform"
-          >
-            <span className="font-pixel">{c.label}</span>
-            <span className="text-[#5B6270] truncate">{c.value}</span>
-          </a>
         ))}
       </div>
       <p className="text-xs leading-relaxed text-[#5B6270]">

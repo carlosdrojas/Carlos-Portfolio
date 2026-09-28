@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { SPOTS, SPOT_ORDER, type SpotId } from './spots';
-import { AboutPanel, ExperiencePanel, GamePanel, ProjectsPanel, ShellPanel } from './Panels';
+import { AboutMePanel, ContactPanel, ExperiencePanel, GamePanel, ProjectsPanel, ShellPanel } from './Panels';
 
 const BenchScene = dynamic(() => import('./BenchScene'), {
   ssr: false,
@@ -22,8 +22,6 @@ export default function LabBench() {
   const tipRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const panRef = useRef(0);
-  const drag = useRef<{ x: number; pan: number } | null>(null);
   const [touch, setTouch] = useState(false);
 
   useEffect(() => {
@@ -67,22 +65,7 @@ export default function LabBench() {
     }
   }, [active, reduceMotion]);
 
-  // Dragging sideways pans along the bench. Portrait phones can't fit the whole
-  // bench, so this is how you reach the laptop and clipboard there.
-  const onPointerDown = (e: React.PointerEvent) => {
-    if (active || (e.target as HTMLElement).tagName !== 'CANVAS') return;
-    drag.current = { x: e.clientX, pan: panRef.current };
-  };
-  const endDrag = () => {
-    drag.current = null;
-  };
-
   const onPointerMove = (e: React.PointerEvent) => {
-    if (drag.current) {
-      const limit = window.innerWidth < 720 ? 2.3 : 1.2;
-      const next = drag.current.pan - ((e.clientX - drag.current.x) / window.innerWidth) * 4;
-      panRef.current = Math.max(-limit, Math.min(limit, next));
-    }
     if (tipRef.current) tipRef.current.style.transform = `translate(${e.clientX + 16}px, ${e.clientY + 16}px)`;
     if (!pointerOnScene && e.pointerType === 'mouse') setPointerOnScene(true);
   };
@@ -91,32 +74,22 @@ export default function LabBench() {
   const spot = active ? SPOTS[active] : null;
 
   return (
-    <div
-      className="fixed inset-0 overflow-hidden bg-[#2A2E35] font-sans touch-pan-y"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endDrag}
-      onPointerCancel={endDrag}
-      onPointerLeave={() => {
-        endDrag();
-        setPointerOnScene(false);
-      }}
-    >
+    <div className="fixed inset-0 overflow-hidden bg-[#2A2E35] font-sans" onPointerMove={onPointerMove} onPointerLeave={() => setPointerOnScene(false)}>
       <div className="absolute inset-0" aria-hidden="true">
-        <BenchScene active={active} hovered={hovered} onHover={setHovered} onSelect={select} reduceMotion={reduceMotion} panRef={panRef} />
+        <BenchScene active={active} hovered={hovered} onHover={setHovered} onSelect={select} reduceMotion={reduceMotion} />
       </div>
 
       <header className={`${card} absolute left-4 top-[calc(16px+env(safe-area-inset-top,0px))] max-w-[calc(100%-32px)] px-4 py-3 ${active ? 'max-sm:hidden' : ''}`}>
         <h1 className="font-pixel text-xl sm:text-2xl leading-none">Carlos Rojas</h1>
         <p className="mt-1.5 text-xs sm:text-sm text-[#5B6270]">ECE at UT Austin. SDE intern at Amazon.</p>
-        <Link href="/" className="mt-1.5 inline-block text-xs sm:text-sm font-semibold text-[#2F6470] underline underline-offset-4">
+        <Link href="/classic" className="mt-1.5 inline-block text-xs sm:text-sm font-semibold text-[#2F6470] underline underline-offset-4">
           View the classic site
         </Link>
       </header>
 
       {!visited && (
         <p className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(96px+env(safe-area-inset-bottom,0px))] whitespace-nowrap bg-[#151A21]/80 px-3 py-1.5 font-pixel text-sm text-[#F2EFE8]">
-          {touch ? 'Tap anything. Drag to look around.' : 'Click anything on the bench'}
+          {touch ? 'Tap anything on the bench' : 'Click anything on the bench'}
         </p>
       )}
 
@@ -181,7 +154,8 @@ export default function LabBench() {
           {active === 'laptop' && <ShellPanel />}
           {active === 'scope' && <ExperiencePanel />}
           {active === 'launchpad' && <GamePanel />}
-          {active === 'clipboard' && <AboutPanel />}
+          {active === 'phone' && <AboutMePanel onOpen={select} />}
+          {active === 'clipboard' && <ContactPanel />}
         </div>
       </aside>
     </div>

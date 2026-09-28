@@ -41,9 +41,12 @@ export function Room() {
 
 const PIN_COLORS = ['#D94A3D', '#2F6FEB', '#E8C547', '#2E9E5B', '#D94A3D', '#2F6FEB'];
 const PINNED = projects.slice(0, 6);
+// Small copies in /public/lab/thumbs keep the pegboard light (the originals are up to 3 MB).
+const thumb = (src: string) => `/lab/thumbs/${src.replace(/^\//, '').replace(/\.\w+$/, '')}.jpg`;
+const PHOTO_URLS = [...PINNED.map((p) => thumb(p.image)), '/lab/me.jpg'];
 
 export function Pegboard() {
-  const photos = useTexture(PINNED.map((p) => p.image), (loaded) => {
+  const photos = useTexture(PHOTO_URLS, (loaded) => {
     (Array.isArray(loaded) ? loaded : [loaded]).forEach((t) => {
       t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = THREE.NearestFilter;
@@ -85,9 +88,21 @@ export function Pegboard() {
           </group>
         );
       })}
+      {/* a photo of me, pinned up with the projects */}
+      <group position={[2.02, 0.4, 0.045]} rotation={[0, 0, -0.07]}>
+        <Box args={[0.66, 0.62, 0.012]} color="#FBFAF6" />
+        <mesh position={[0, 0.05, 0.008]}>
+          <planeGeometry args={[0.58, 0.44]} />
+          <Toon color="#FFFFFF" map={photos[PINNED.length]} />
+        </mesh>
+        <mesh position={[0, 0.27, 0.03]} castShadow>
+          <sphereGeometry args={[0.032, 10, 8]} />
+          <Toon color="#E8C547" />
+        </mesh>
+      </group>
       {/* a screwdriver on a hook, a spare board, and a coil of wire */}
-      <Cyl args={[0.012, 0.012, 0.12]} color="#8E959E" position={[2.1, 0.72, 0.06]} rotation={[Math.PI / 2, 0, 0]} />
-      <ToonModel url="/models/screwdriver.glb" size={0.42} position={[2.1, 0.28, 0.06]} rotation={[-Math.PI / 2, 0, 0]} />
+      <Cyl args={[0.012, 0.012, 0.12]} color="#8E959E" position={[2.15, -0.28, 0.06]} rotation={[Math.PI / 2, 0, 0]} />
+      <ToonModel url="/models/screwdriver.glb" size={0.42} position={[2.15, -0.72, 0.06]} rotation={[-Math.PI / 2, 0, 0]} />
       <ToonModel url="/models/circuit-board.glb" size={0.5} position={[-2.08, -0.72, 0.03]} rotation={[0, 0, 0.06]} />
       <mesh position={[-2.05, 0.5, 0.08]} castShadow>
         <torusGeometry args={[0.13, 0.03, 8, 20]} />
@@ -364,6 +379,61 @@ export function LaunchPad() {
 
 /* ---------- clipboard with a resume ---------- */
 
+/* ---------- phone: lock screen with my photo ---------- */
+
+export function Phone() {
+  const photo = useMemo(() => {
+    const img = new Image();
+    img.src = '/lab/headshot.jpg';
+    return img;
+  }, []);
+
+  const screen = useCanvasTexture(120, 240, (g) => {
+    g.fillStyle = '#1B2A44';
+    g.fillRect(0, 0, 120, 240);
+    g.fillStyle = '#2F6470';
+    g.fillRect(0, 150, 120, 90);
+    const now = new Date();
+    g.fillStyle = '#F7F5F0';
+    g.textAlign = 'center';
+    g.font = 'bold 26px monospace';
+    g.fillText(`${now.getHours() % 12 || 12}:${String(now.getMinutes()).padStart(2, '0')}`, 60, 42);
+    g.font = '9px monospace';
+    g.fillText(now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }), 60, 56);
+    if (photo.complete && photo.naturalWidth) {
+      g.save();
+      g.beginPath();
+      g.arc(60, 104, 32, 0, Math.PI * 2);
+      g.clip();
+      g.drawImage(photo, 28, 72, 64, 64);
+      g.restore();
+    }
+    g.strokeStyle = '#F7F5F0';
+    g.lineWidth = 2;
+    g.beginPath();
+    g.arc(60, 104, 33, 0, Math.PI * 2);
+    g.stroke();
+    g.fillStyle = '#F7F5F0';
+    g.fillRect(10, 172, 100, 40);
+    g.fillStyle = '#1D2127';
+    g.textAlign = 'left';
+    g.font = 'bold 10px monospace';
+    g.fillText('About me', 18, 188);
+    g.font = '8px monospace';
+    g.fillStyle = '#5B6270';
+    g.fillText('Tap to open', 18, 202);
+    g.fillStyle = '#F7F5F0';
+    g.fillRect(42, 228, 36, 3);
+  }, 1000);
+
+  return (
+    <group>
+      <Box args={[0.25, 0.022, 0.48]} color="#1D2127" position={[0, 0.011, 0]} />
+      <Screen size={[0.225, 0.45]} texture={screen} position={[0, 0.0225, 0]} rotation={[-Math.PI / 2, 0, 0]} />
+    </group>
+  );
+}
+
 export function Clipboard() {
   const page = useCanvasTexture(192, 258, (g) => {
     g.setTransform(2, 0, 0, 2, 0, 0);
@@ -418,9 +488,9 @@ export function Props() {
       <Cyl args={[0.1, 0.1, 0.07]} color="#8E959E" position={[-0.95, 1.05, -0.95]} />
       <Cyl args={[0.04, 0.04, 0.075]} color="#2A2D33" position={[-0.95, 1.05, -0.95]} />
       <ToonModel url="/models/soldering-station.glb" size={0.62} position={[-3.0, 1.012, 0.5]} rotation={[0, 0.9, 0]} />
-      <ToonModel url="/models/multimeter.glb" size={0.5} position={[-0.15, 1.012, 1.2]} rotation={[0, -Math.PI / 2 - 0.2, 0]} />
-      <Wire points={[[-0.08, 1.08, 1.05], [0.0, 1.06, 0.85], [0.08, 1.05, 0.72], [0.14, 1.1, 0.62]]} color="#D94A3D" radius={0.009} />
-      <Wire points={[[-0.02, 1.08, 1.1], [0.15, 1.05, 1.0], [0.25, 1.1, 0.88]]} color="#1F2226" radius={0.009} />
+      <ToonModel url="/models/multimeter.glb" size={0.38} position={[-0.25, 1.012, 1.35]} rotation={[0, -Math.PI / 2 - 0.25, 0]} />
+      <Wire points={[[-0.18, 1.06, 1.22], [-0.05, 1.05, 0.95], [0.08, 1.05, 0.75], [0.14, 1.1, 0.62]]} color="#D94A3D" radius={0.009} />
+      <Wire points={[[-0.12, 1.06, 1.26], [0.12, 1.05, 1.05], [0.25, 1.1, 0.88]]} color="#1F2226" radius={0.009} />
       <ToonModel url="/models/headphones.glb" size={0.3} position={[1.35, 1.012, 1.2]} rotation={[0, -0.5, 0]} />
       <ToonModel url="/models/toolbox.glb" size={0.6} position={[2.85, 1.012, -0.1]} rotation={[0, 1.25, 0]} />
       <ToonModel url="/models/desk-lamp.glb" size={0.95} position={[-2.55, 1.012, -1.15]} rotation={[0, 0.55, 0]} />
