@@ -22,6 +22,27 @@ export default function LabBench() {
   const tipRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const [dockThumb, setDockThumb] = useState<{ left: number; width: number } | null>(null);
+
+  // Size and place the dock's scroll thumb; null when everything fits.
+  const updateDockThumb = useCallback(() => {
+    const el = dockRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth + 1) {
+      setDockThumb(null);
+      return;
+    }
+    setDockThumb({ left: (el.scrollLeft / el.scrollWidth) * 100, width: (el.clientWidth / el.scrollWidth) * 100 });
+  }, []);
+
+  useEffect(() => {
+    const el = dockRef.current;
+    if (!el) return;
+    updateDockThumb();
+    const ro = new ResizeObserver(updateDockThumb);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateDockThumb]);
   const [touch, setTouch] = useState(false);
 
   useEffect(() => {
@@ -107,22 +128,30 @@ export default function LabBench() {
 
       <nav
         aria-label="Objects on the bench"
-        className={`${card} absolute bottom-[calc(16px+env(safe-area-inset-bottom,0px))] left-4 right-4 sm:right-auto flex gap-1 p-1.5 overflow-x-auto ${active ? 'max-sm:hidden' : 'sm:left-1/2 sm:-translate-x-1/2'}`}
+        className={`${card} absolute bottom-[calc(16px+env(safe-area-inset-bottom,0px))] left-4 right-4 sm:right-auto flex flex-col ${active ? 'max-sm:hidden' : 'sm:left-1/2 sm:-translate-x-1/2'}`}
       >
-        {SPOT_ORDER.map((id) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => select(id)}
-            onMouseEnter={() => setHovered(id)}
-            onMouseLeave={() => setHovered(null)}
-            aria-current={active === id}
-            className={`flex flex-col items-start gap-0.5 whitespace-nowrap px-2.5 sm:px-3 py-2 text-left hover:bg-[#EDE9E0] ${active === id ? 'bg-[#1D2127] text-[#F7F5F0] hover:bg-[#1D2127]' : ''}`}
-          >
-            <b className="font-pixel text-sm">{SPOTS[id].name}</b>
-            <span className={`text-xs ${active === id ? 'text-[#C9CED6]' : 'text-[#5B6270]'}`}>{SPOTS[id].role}</span>
-          </button>
-        ))}
+        <div ref={dockRef} onScroll={updateDockThumb} className="flex gap-1 p-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {SPOT_ORDER.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => select(id)}
+              onMouseEnter={() => setHovered(id)}
+              onMouseLeave={() => setHovered(null)}
+              aria-current={active === id}
+              className={`flex flex-col items-start gap-0.5 whitespace-nowrap px-2.5 sm:px-3 py-2 text-left hover:bg-[#EDE9E0] ${active === id ? 'bg-[#1D2127] text-[#F7F5F0] hover:bg-[#1D2127]' : ''}`}
+            >
+              <b className="font-pixel text-sm">{SPOTS[id].name}</b>
+              <span className={`text-xs ${active === id ? 'text-[#C9CED6]' : 'text-[#5B6270]'}`}>{SPOTS[id].role}</span>
+            </button>
+          ))}
+        </div>
+        {/* Phones hide native scrollbars, so draw one to show the dock scrolls sideways. */}
+        {dockThumb && (
+          <div aria-hidden="true" className="relative mx-2 mb-1.5 h-1.5 bg-[#DAD6CC]">
+            <div className="absolute inset-y-0 bg-[#1D2127]" style={{ left: `${dockThumb.left}%`, width: `${dockThumb.width}%` }} />
+          </div>
+        )}
       </nav>
 
       <aside
