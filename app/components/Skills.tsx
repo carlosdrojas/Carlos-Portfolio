@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Code, Database, GitBranch, CircuitBoard, MicVocal, Brain } from 'lucide-react';
 
-const skills = [
+export const skills = [
   {
     category: 'Frontend',
     icon: Code,

@@ -66,3 +66,7 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@utility font-pixel {
+  font-family: var(--font-pixel), ui-monospace, monospace;
+}
