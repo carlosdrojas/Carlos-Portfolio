@@ -9,7 +9,6 @@ import Resume from '../components/Resume';
 import Contact from '../components/Contact';
 
 export const metadata: Metadata = {
-  title: 'Carlos Rojas | Classic',
   description: 'Carlos Rojas: projects, experience, skills, and resume on one scrolling page.',
 };
 

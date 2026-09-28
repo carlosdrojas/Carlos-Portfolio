@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Carlos Rojas",
+  title: "Carlos Rojas - Winner",
   description: "Carlos Rojas, electrical and computer engineering at UT Austin. Explore projects, experience, and a playable Space Invaders on an interactive 3D lab bench.",
 };
 
