@@ -46,7 +46,7 @@ export default function BenchScene({ active, hovered, onHover, onSelect, reduceM
       fallback={<p className="p-8 text-center text-[#E8E4DA]">This browser can’t show the 3D bench. Use the buttons below to open each part.</p>}
     >
       <color attach="background" args={['#2A2E35']} />
-      <fog attach="fog" args={['#2A2E35', 11, 22]} />
+      <fog attach="fog" args={['#2A2E35', 18, 32]} />
       <hemisphereLight args={['#E4ECF7', '#5E4E3C', 1.1]} />
       <directionalLight
         position={[3.5, 7, 4.5]}
@@ -128,8 +128,9 @@ function IntroSweep({ onHover, skip }: { onHover: (id: SpotId | null) => void; s
 }
 
 const PORTRAIT_FOV = 55;
-// Half the width of everything on the bench, soldering station to toolbox.
-const BENCH_HALF_WIDTH = 3.25;
+// Half the width to keep in frame on portrait screens: the bench plus the wall
+// flag and record. The soldering station and toolbox at the far ends may crop.
+const BENCH_HALF_WIDTH = 3.05;
 
 function homeView(aspect: number) {
   if (aspect < 0.8) {
@@ -138,8 +139,9 @@ function homeView(aspect: number) {
     // the objects at the edges.
     const halfH = Math.atan(Math.tan(THREE.MathUtils.degToRad(PORTRAIT_FOV / 2)) * aspect);
     const dist = BENCH_HALF_WIDTH / Math.tan(halfH);
-    const look = new THREE.Vector3(0, 1.3, 0.05);
-    const dir = new THREE.Vector3(0, 0.8, 0.6).normalize();
+    const look = new THREE.Vector3(0, 1.55, -0.1);
+    // Close to the desktop angle, tipped down a little more to use the tall screen.
+    const dir = new THREE.Vector3(0, 0.42, 0.9).normalize();
     return { pos: look.clone().addScaledVector(dir, dist), look };
   }
   if (aspect < 1.3) return { pos: new THREE.Vector3(0, 3.7, 6.9), look: new THREE.Vector3(0, 1.4, -0.2) };

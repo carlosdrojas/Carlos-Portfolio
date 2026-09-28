@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -496,9 +496,132 @@ export function Props() {
       <ToonModel url="/models/desk-lamp.glb" size={0.95} position={[-2.55, 1.012, -1.15]} rotation={[0, 0.55, 0]} />
       <primitive object={lamp} />
       <primitive object={lamp.target} />
+      {/* on the wall */}
+      <UTFlag />
+      <AlbumOnWall src="/lab/eternal-atake.jpg" position={[2.9, 2.02, -1.7]} tilt={0.05} vinyl={[0.2, 0.14]} labelColor="#7B3FB8" />
+      <AlbumOnWall src="/lab/eternal-atake-2.jpg" position={[3.05, 2.8, -1.7]} tilt={-0.07} vinyl={[-0.2, 0.12]} labelColor="#E8C547" />
       {/* on the floor */}
       <ToonModel url="/models/office-chair.glb" size={1.2} position={[-3.0, 0, 2.0]} rotation={[0, 2.6, 0]} />
       <ToonModel url="/models/houseplant.glb" size={1.7} position={[3.75, 0, -1.25]} />
+    </group>
+  );
+}
+
+/* ---------- wall decor: UT flag and a record ---------- */
+
+const LONGHORN = [
+  'X......................X',
+  'XX....................XX',
+  '.XXX................XXX.',
+  '..XXXXX..........XXXXX..',
+  '....XXXXXXXXXXXXXXXX....',
+  '.......XXXXXXXXXX.......',
+  '........XXXXXXXX........',
+  '.........XXXXXX.........',
+  '.........XXXXXX.........',
+  '..........XXXX..........',
+  '..........XXXX..........',
+  '...........XX...........',
+];
+
+function UTFlag() {
+  const cloth = useCanvasTexture(96, 64, (g) => {
+    g.fillStyle = '#BF5700';
+    g.fillRect(0, 0, 96, 64);
+    g.fillStyle = '#FFFFFF';
+    LONGHORN.forEach((row, y) => {
+      for (let x = 0; x < row.length; x++) if (row[x] === 'X') g.fillRect(12 + x * 3, 14 + y * 3, 3, 3);
+    });
+  }, null);
+
+  // A gentle ripple, pinned along the left edge where the flag hangs from the pole.
+  const geometry = useMemo(() => new THREE.PlaneGeometry(1.05, 0.7, 18, 1), []);
+  const rest = useMemo(() => Float32Array.from(geometry.attributes.position.array), [geometry]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  useFrame((state) => {
+    const pos = geometry.attributes.position;
+    const t = state.clock.elapsedTime;
+    for (let i = 0; i < pos.count; i++) {
+      const x = rest[i * 3];
+      const reach = (x + 0.525) / 1.05;
+      pos.setZ(i, Math.sin(x * 6 - t * 2.2) * 0.035 * reach);
+    }
+    pos.needsUpdate = true;
+    geometry.computeVertexNormals();
+  });
+
+  return (
+    <group position={[-3.0, 2.35, -1.66]} rotation={[0, 0, -0.04]}>
+      <Cyl args={[0.02, 0.02, 0.9]} color="#8E959E" position={[-0.56, -0.05, 0]} />
+      <mesh geometry={geometry} position={[0, 0.05, 0]} castShadow>
+        <Toon color="#FFFFFF" map={cloth} />
+      </mesh>
+    </group>
+  );
+}
+
+// A record pinned to the wall, vinyl peeking out from behind the sleeve. The sleeve
+// shows `src` once it loads, and a drawn placeholder until then (or if it's missing).
+function AlbumOnWall({ src, position, tilt, vinyl, labelColor }: {
+  src: string;
+  position: [number, number, number];
+  tilt: number;
+  vinyl: [number, number];
+  labelColor: string;
+}) {
+  const placeholder = useCanvasTexture(128, 128, (g) => {
+    const grad = g.createLinearGradient(0, 0, 0, 128);
+    grad.addColorStop(0, '#1C0F3A');
+    grad.addColorStop(1, '#5B2A86');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 128, 128);
+    g.fillStyle = '#E9E2FF';
+    for (let i = 0; i < 40; i++) g.fillRect((i * 53) % 128, (i * 29) % 80, 1, 1);
+    g.fillStyle = '#B6F0FF';
+    g.beginPath();
+    g.ellipse(64, 60, 34, 9, 0, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#F7F5F0';
+    g.textAlign = 'center';
+    g.font = 'bold 14px monospace';
+    g.fillText('ETERNAL', 64, 98);
+    g.fillText('ATAKE', 64, 114);
+  }, null);
+
+  const [cover, setCover] = useState<THREE.Texture | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    new THREE.TextureLoader().load(
+      src,
+      (t) => {
+        if (cancelled) return t.dispose();
+        t.colorSpace = THREE.SRGBColorSpace;
+        t.magFilter = THREE.NearestFilter;
+        t.minFilter = THREE.NearestFilter;
+        t.generateMipmaps = false;
+        setCover(t);
+      },
+      undefined,
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return (
+    <group position={position} rotation={[0, 0, tilt]}>
+      <Cyl args={[0.33, 0.33, 0.01, 32]} color="#141417" position={[vinyl[0], vinyl[1], -0.005]} rotation={[Math.PI / 2, 0, 0]} />
+      <Cyl args={[0.1, 0.1, 0.012, 20]} color={labelColor} position={[vinyl[0], vinyl[1], -0.003]} rotation={[Math.PI / 2, 0, 0]} />
+      <Box args={[0.72, 0.72, 0.012]} color="#F4F2EC" position={[0, 0, 0.008]} />
+      <mesh position={[0, 0, 0.0145]}>
+        <planeGeometry args={[0.7, 0.7]} />
+        <Toon color="#FFFFFF" map={cover ?? placeholder} />
+      </mesh>
+      <mesh position={[0, 0.33, 0.04]} castShadow>
+        <sphereGeometry args={[0.03, 10, 8]} />
+        <Toon color="#D94A3D" />
+      </mesh>
     </group>
   );
 }
