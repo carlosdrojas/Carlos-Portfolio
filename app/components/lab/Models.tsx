@@ -496,6 +496,9 @@ export function Props() {
       <ToonModel url="/models/desk-lamp.glb" size={0.95} position={[-2.55, 1.012, -1.15]} rotation={[0, 0.55, 0]} />
       <primitive object={lamp} />
       <primitive object={lamp.target} />
+      {/* two white Monsters: one fresh, one finished and knocked over */}
+      <MonsterCan position={[1.18, 1.012, 0.5]} rotation={[0, -0.6, 0]} />
+      <MonsterCan position={[0.95, 1.012 + 0.056, 1.42]} rotation={[0, 0.7, Math.PI / 2]} lying />
       {/* on the wall */}
       <UTFlag />
       <AlbumOnWall src="/lab/eternal-atake.jpg" position={[2.9, 2.02, -1.7]} tilt={0.05} vinyl={[0.2, 0.14]} labelColor="#7B3FB8" />
@@ -503,6 +506,50 @@ export function Props() {
       {/* on the floor */}
       <ToonModel url="/models/office-chair.glb" size={1.2} position={[-3.0, 0, 2.0]} rotation={[0, 2.6, 0]} />
       <ToonModel url="/models/houseplant.glb" size={1.7} position={[3.75, 0, -1.25]} />
+    </group>
+  );
+}
+
+/* ---------- white Monster can ---------- */
+
+const CAN_H = 0.3;
+const CAN_R = 0.056;
+
+function MonsterCan({ position, rotation, lying = false }: { position: [number, number, number]; rotation: [number, number, number]; lying?: boolean }) {
+  // The label's claw mark wraps to the can's local -z side; spin it toward the
+  // viewer when standing, or face-up when the can lies on its side.
+  const spin = lying ? -Math.PI / 2 : Math.PI;
+  // Wraps around the can: white body with a silver claw mark on the front.
+  const label = useCanvasTexture(128, 96, (g) => {
+    g.fillStyle = '#F4F4F1';
+    g.fillRect(0, 0, 128, 96);
+    g.fillStyle = '#B9BEC4';
+    g.fillRect(0, 0, 128, 4);
+    g.fillRect(0, 92, 128, 4);
+    // three jagged claw strokes
+    g.fillStyle = '#8E959E';
+    [44, 60, 76].forEach((x0, i) => {
+      for (let y = 18; y < 70; y += 2) {
+        const jag = ((y / 2 + i) % 3) - 1;
+        g.fillRect(x0 + jag + Math.round((y - 18) * 0.05), y, 5, 2);
+      }
+    });
+    g.fillStyle = '#5B6270';
+    g.font = 'bold 9px monospace';
+    g.textAlign = 'center';
+    g.fillText('ULTRA', 64, 84);
+  }, null);
+
+  // The can's own origin is its base center; lying cans pivot around their middle.
+  const lift = lying ? 0 : CAN_H / 2;
+  return (
+    <group position={position} rotation={rotation}>
+      <mesh position={[0, lift, 0]} rotation={[0, spin, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[CAN_R, CAN_R, CAN_H, 20]} />
+        <Toon color="#FFFFFF" map={label} />
+      </mesh>
+      <Cyl args={[CAN_R * 0.9, CAN_R, 0.014, 20]} color="#B9BEC4" position={[0, lift + CAN_H / 2 + 0.007, 0]} />
+      <Box args={[0.03, 0.004, 0.018]} color="#8E959E" position={[0, lift + CAN_H / 2 + 0.016, 0.012]} cast={false} />
     </group>
   );
 }

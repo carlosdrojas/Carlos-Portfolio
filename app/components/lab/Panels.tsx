@@ -44,7 +44,7 @@ export function ShellPanel() {
         <TerminalDemo />
       </div>
       <p className="text-sm text-[#5B6270] leading-relaxed">
-        Try <code className="font-mono">ls</code>, <code className="font-mono">cat README.md</code>, <code className="font-mono">sleep 30 &amp;</code> then <code className="font-mono">jobs</code>. The real yash runs fork/exec, pipes, redirection, and job control in C.
+        Try <code className="font-mono">sleep 10</code>, then Ctrl+Z to stop it, <code className="font-mono">jobs</code>, and <code className="font-mono">bg</code> or <code className="font-mono">fg</code>. Or <code className="font-mono">sleep 5 &amp;</code> and keep typing. The real yash runs fork/exec, pipes, redirection, and job control in C.
       </p>
     </div>
   );
@@ -126,6 +126,7 @@ const CONTACT = [
   { label: 'Email', value: 'rojasdamiancarlos@gmail.com', href: 'mailto:rojasdamiancarlos@gmail.com' },
   { label: 'LinkedIn', value: 'carlos-d-rojas', href: 'https://www.linkedin.com/in/carlos-d-rojas/' },
   { label: 'GitHub', value: 'carlosdrojas', href: 'https://github.com/carlosdrojas' },
+  { label: 'Instagram', value: '@carlosroja5', href: 'https://www.instagram.com/carlosroja5/' },
   { label: 'Resume', value: 'PDF', href: '/resume.pdf' },
 ];
 

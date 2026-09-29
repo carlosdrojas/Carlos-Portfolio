@@ -10,6 +10,22 @@ interface Job {
   id: number;
   cmd: string;
   state: 'Running' | 'Stopped' | 'Done';
+  endsAt?: number; // when a Running job finishes (ms since epoch)
+  remaining?: number; // time left on a Stopped job (ms)
+}
+
+interface ForegroundProcess {
+  cmd: string;
+  endsAt: number;
+  jobId: number; // 0 until the process has been a job
+}
+
+// Parses `sleep N` into milliseconds, or returns an error message.
+function parseSleep(args: string[]): number | string {
+  if (!args[0]) return 'sleep: missing operand';
+  const secs = Number(args[0]);
+  if (!Number.isFinite(secs) || secs < 0) return `sleep: invalid time interval '${args[0]}'`;
+  return Math.min(secs, 600) * 1000;
 }
 
 const INITIAL_FS: FileSystem = {
@@ -100,6 +116,32 @@ export default function TerminalDemo() {
   const [historyIdx, setHistoryIdx] = useState(-1);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [nextJobId, setNextJobId] = useState(1);
+  const [fgProc, setFgProc] = useState<ForegroundProcess | null>(null);
+  const jobsRef = useRef(jobs);
+  const fgRef = useRef(fgProc);
+  useEffect(() => {
+    jobsRef.current = jobs;
+    fgRef.current = fgProc;
+  }, [jobs, fgProc]);
+
+  // Finishes the foreground sleep and any background jobs whose time is up.
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const fg = fgRef.current;
+      if (fg && now >= fg.endsAt) {
+        fgRef.current = null;
+        setFgProc(null);
+      }
+      const done = jobsRef.current.filter((j) => j.state === 'Running' && j.endsAt !== undefined && now >= j.endsAt);
+      if (done.length) {
+        jobsRef.current = jobsRef.current.filter((j) => !done.includes(j));
+        setJobs((prev) => prev.filter((j) => !done.some((d) => d.id === j.id)));
+        setLines((prev) => [...prev, ...done.map((j) => `[${j.id}]+  Done\t\t\t${j.cmd}`)]);
+      }
+    }, 200);
+    return () => clearInterval(timer);
+  }, []);
   const [fs, setFs] = useState<FileSystem>(() => deepClone(INITIAL_FS));
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -154,10 +196,20 @@ export default function TerminalDemo() {
     const cmd = isBg ? trimmed.slice(0, -1).trim() : trimmed;
 
     if (isBg) {
+      const parts = cmd.split(/\s+/);
+      let duration = 200;
+      if (parts[0] === 'sleep') {
+        const parsed = parseSleep(parts.slice(1));
+        if (typeof parsed === 'string') {
+          setLines([...newLines, parsed]);
+          return;
+        }
+        duration = parsed;
+      }
       const jobId = nextJobId;
       setNextJobId(prev => prev + 1);
-      setJobs(prev => [...prev, { id: jobId, cmd: cmd, state: 'Running' }]);
-      setLines([...newLines, `[${jobId}] Running\t\t\t${cmd} &`]);
+      setJobs(prev => [...prev, { id: jobId, cmd: cmd, state: 'Running', endsAt: Date.now() + duration }]);
+      setLines([...newLines, `[${jobId}] ${4200 + jobId}`]);
       return;
     }
 
@@ -203,6 +255,7 @@ export default function TerminalDemo() {
           '  pwd               Print working directory',
           '  whoami            Print current user',
           '  date              Print current date',
+          '  sleep <seconds>   Wait; Ctrl+C cancels, Ctrl+Z stops it',
           '  jobs              List background jobs',
           '  fg                Bring job to foreground',
           '  bg                Resume stopped job in background',
@@ -265,19 +318,29 @@ export default function TerminalDemo() {
         return jobs.map(j => `[${j.id}]${j.id === jobs[jobs.length - 1].id ? '+' : '-'} ${j.state}\t\t\t${j.cmd}`);
       }
 
+      case 'sleep': {
+        const parsed = parseSleep(args);
+        if (typeof parsed === 'string') return [parsed];
+        if (parsed > 0) setFgProc({ cmd, endsAt: Date.now() + parsed, jobId: 0 });
+        return [];
+      }
+
       case 'fg': {
-        if (jobs.length === 0) return ['fg: no current job'];
-        const latest = jobs[jobs.length - 1];
-        setJobs(prev => prev.filter(j => j.id !== latest.id));
-        return [latest.cmd, `(${latest.cmd} brought to foreground and completed)`];
+        const wanted = args[0] ? Number(args[0].replace('%', '')) : null;
+        const target = wanted ? jobs.find(j => j.id === wanted) : jobs[jobs.length - 1];
+        if (!target) return [args[0] ? `fg: ${args[0]}: no such job` : 'fg: no current job'];
+        setJobs(prev => prev.filter(j => j.id !== target.id));
+        const left = target.state === 'Running' ? (target.endsAt ?? 0) - Date.now() : (target.remaining ?? 0);
+        if (left > 0) setFgProc({ cmd: target.cmd, endsAt: Date.now() + left, jobId: target.id });
+        return [target.cmd];
       }
 
       case 'bg': {
         const stopped = jobs.filter(j => j.state === 'Stopped');
         if (stopped.length === 0) return ['bg: no stopped job'];
         const latest = stopped[stopped.length - 1];
-        setJobs(prev => prev.map(j => j.id === latest.id ? { ...j, state: 'Running' } : j));
-        return [`[${latest.id}]+ Running\t\t\t${latest.cmd} &`];
+        setJobs(prev => prev.map(j => j.id === latest.id ? { ...j, state: 'Running', endsAt: Date.now() + (j.remaining ?? 0) } : j));
+        return [`[${latest.id}]+ ${latest.cmd} &`];
       }
 
       case 'clear':
@@ -428,6 +491,32 @@ export default function TerminalDemo() {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // Ctrl+C cancels and Ctrl+Z stops the foreground process, like a real shell.
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'z')) {
+      e.preventDefault();
+      if (!fgProc) {
+        if (e.key === 'c') {
+          setLines([...lines, getPrompt() + input + '^C']);
+          setInput('');
+        }
+        return;
+      }
+      if (e.key === 'c') {
+        setLines([...lines, '^C']);
+      } else {
+        const id = fgProc.jobId || nextJobId;
+        if (!fgProc.jobId) setNextJobId(prev => prev + 1);
+        setJobs(prev => [...prev, { id, cmd: fgProc.cmd, state: 'Stopped', remaining: Math.max(0, fgProc.endsAt - Date.now()) }]);
+        setLines([...lines, '^Z', `[${id}]+  Stopped\t\t\t${fgProc.cmd}`]);
+      }
+      setFgProc(null);
+      return;
+    }
+    // While a foreground process runs, the prompt is gone and input waits.
+    if (fgProc) {
+      if (e.key === 'Enter') e.preventDefault();
+      return;
+    }
     if (e.key === 'Enter') {
       processCommand(input);
       setInput('');
@@ -466,7 +555,7 @@ export default function TerminalDemo() {
         </div>
       ))}
       <div className="flex items-center">
-        <span className="text-green-400 shrink-0">{getPrompt()}</span>
+        {!fgProc && <span className="text-green-400 shrink-0">{getPrompt()}</span>}
         <input
           ref={inputRef}
           type="text"
