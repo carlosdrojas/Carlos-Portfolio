@@ -25,13 +25,14 @@ export const HotContext = createContext(false);
 const HOT = new THREE.Color('#6B4A1A');
 const BLACK = new THREE.Color('#000000');
 
-export function Toon({ color, map }: { color: string; map?: THREE.Texture | null }) {
+export function Toon({ color, map, side }: { color: string; map?: THREE.Texture | null; side?: THREE.Side }) {
   const hot = useContext(HotContext);
   const gradientMap = useMemo(getRamp, []);
   return (
     <meshToonMaterial
       color={color}
       map={map ?? null}
+      side={side ?? THREE.FrontSide}
       gradientMap={gradientMap}
       emissive={hot ? HOT : BLACK}
       emissiveIntensity={hot ? 0.55 : 0}

@@ -497,8 +497,8 @@ export function Props() {
       <primitive object={lamp} />
       <primitive object={lamp.target} />
       {/* two white Monsters: one fresh, one finished and knocked over */}
-      <MonsterCan position={[1.18, 1.012, 0.5]} rotation={[0, -0.6, 0]} />
-      <MonsterCan position={[0.95, 1.012 + 0.056, 1.42]} rotation={[0, 0.7, Math.PI / 2]} lying />
+      <MonsterCan position={[1.2, 1.012, 0.5]} rotation={[0, -0.6, 0]} />
+      <MonsterCan position={[0.95, 1.012 + CAN_R * CAN_SCALE, 1.42]} rotation={[0, 0.7, Math.PI / 2]} lying />
       {/* on the wall */}
       <UTFlag />
       <AlbumOnWall src="/lab/eternal-atake.jpg" position={[2.9, 2.02, -1.7]} tilt={0.05} vinyl={[0.2, 0.14]} labelColor="#7B3FB8" />
@@ -512,44 +512,100 @@ export function Props() {
 
 /* ---------- white Monster can ---------- */
 
+// A 16 oz can, in scene units (the bench is about 7 wide).
 const CAN_H = 0.3;
 const CAN_R = 0.056;
+// Real 16 oz size next to the laptop and scope.
+const CAN_SCALE = 1.4;
+const BODY_BOTTOM = 0.02;
+const BODY_TOP = 0.265;
+
+// Silver profiles, revolved around the can's axis: neck, rolled rim and recessed
+// lid on top; a domed base underneath. Points run bottom to top as [radius, height].
+const CAN_TOP: [number, number][] = [
+  [CAN_R, BODY_TOP], [0.052, 0.28], [0.047, 0.29], [0.0475, 0.296], [0.049, 0.299], [0.046, 0.3], [0.043, 0.296], [0.02, 0.294], [0, 0.294],
+];
+const CAN_BASE: [number, number][] = [
+  [0, 0.013], [0.034, 0.008], [0.046, 0], [0.053, 0.005], [CAN_R, BODY_BOTTOM],
+];
+
+function useLathe(profile: [number, number][]) {
+  const geometry = useMemo(() => new THREE.LatheGeometry(profile.map(([r, y]) => new THREE.Vector2(r, y)), 32), [profile]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
+  return geometry;
+}
 
 function MonsterCan({ position, rotation, lying = false }: { position: [number, number, number]; rotation: [number, number, number]; lying?: boolean }) {
-  // The label's claw mark wraps to the can's local -z side; spin it toward the
-  // viewer when standing, or face-up when the can lies on its side.
+  // The label wraps once around the body. Its front (the claw) sits at the
+  // canvas center, which lands on the can's local -z side, so the body spins to
+  // face the viewer when standing, or face-up when the can lies on its side.
   const spin = lying ? -Math.PI / 2 : Math.PI;
-  // Wraps around the can: white body with a silver claw mark on the front.
-  const label = useCanvasTexture(128, 96, (g) => {
-    g.fillStyle = '#F4F4F1';
-    g.fillRect(0, 0, 128, 96);
-    g.fillStyle = '#B9BEC4';
-    g.fillRect(0, 0, 128, 4);
-    g.fillRect(0, 92, 128, 4);
-    // three jagged claw strokes
-    g.fillStyle = '#8E959E';
-    [44, 60, 76].forEach((x0, i) => {
-      for (let y = 18; y < 70; y += 2) {
-        const jag = ((y / 2 + i) % 3) - 1;
-        g.fillRect(x0 + jag + Math.round((y - 18) * 0.05), y, 5, 2);
+  const label = useCanvasTexture(256, 256, (g) => {
+    g.fillStyle = '#F2F2EE';
+    g.fillRect(0, 0, 256, 256);
+    g.fillStyle = '#C3C8CE';
+    g.fillRect(0, 0, 256, 8);
+    g.fillRect(0, 248, 256, 8);
+    // Claw mark: three jagged, slightly slanted strokes that taper toward the bottom.
+    g.fillStyle = '#5E656E';
+    [100, 124, 148].forEach((cx, i) => {
+      const top = 36 + (i === 1 ? -6 : 0);
+      const bottom = 176;
+      g.beginPath();
+      for (let y = top; y <= bottom; y += 6) {
+        const w = 7 - ((y - top) / (bottom - top)) * 4.5;
+        const jag = (Math.floor(y / 6) + i) % 2 ? 2.5 : -2.5;
+        g.lineTo(cx + (y - top) * 0.08 - w + jag, y);
       }
+      for (let y = bottom; y >= top; y -= 6) {
+        const w = 7 - ((y - top) / (bottom - top)) * 4.5;
+        const jag = (Math.floor(y / 6) + i) % 2 ? -2 : 2;
+        g.lineTo(cx + (y - top) * 0.08 + w + jag, y);
+      }
+      g.closePath();
+      g.fill();
     });
-    g.fillStyle = '#5B6270';
-    g.font = 'bold 9px monospace';
+    g.fillStyle = '#23262B';
     g.textAlign = 'center';
-    g.fillText('ULTRA', 64, 84);
+    g.font = 'bold 26px monospace';
+    g.fillText('ULTRA', 128, 214);
+    g.font = 'bold 11px monospace';
+    g.fillStyle = '#5E656E';
+    g.fillText('ZERO SUGAR', 128, 232);
+    // Fine print on the back.
+    g.fillStyle = '#C9CDD2';
+    for (let r = 0; r < 12; r++) {
+      g.fillRect(10, 60 + r * 9, 34 - ((r * 7) % 12), 3);
+      g.fillRect(212, 60 + r * 9, 34 - ((r * 5) % 12), 3);
+    }
   }, null);
 
-  // The can's own origin is its base center; lying cans pivot around their middle.
-  const lift = lying ? 0 : CAN_H / 2;
+  const top = useLathe(CAN_TOP);
+  const base = useLathe(CAN_BASE);
+
   return (
-    <group position={position} rotation={rotation}>
-      <mesh position={[0, lift, 0]} rotation={[0, spin, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[CAN_R, CAN_R, CAN_H, 20]} />
-        <Toon color="#FFFFFF" map={label} />
-      </mesh>
-      <Cyl args={[CAN_R * 0.9, CAN_R, 0.014, 20]} color="#B9BEC4" position={[0, lift + CAN_H / 2 + 0.007, 0]} />
-      <Box args={[0.03, 0.004, 0.018]} color="#8E959E" position={[0, lift + CAN_H / 2 + 0.016, 0.012]} cast={false} />
+    <group position={position} rotation={rotation} scale={CAN_SCALE}>
+      {/* A standing can rests on its base; a lying one pivots around its middle. */}
+      <group position={[0, lying ? -CAN_H / 2 : 0, 0]}>
+        <mesh position={[0, (BODY_BOTTOM + BODY_TOP) / 2, 0]} rotation={[0, spin, 0]} castShadow receiveShadow>
+          <cylinderGeometry args={[CAN_R, CAN_R, BODY_TOP - BODY_BOTTOM, 32, 1, true]} />
+          <Toon color="#FFFFFF" map={label} />
+        </mesh>
+        <mesh geometry={top} castShadow receiveShadow>
+          <Toon color="#C3C8CE" side={THREE.DoubleSide} />
+        </mesh>
+        <mesh geometry={base} castShadow receiveShadow>
+          <Toon color="#AEB4BB" side={THREE.DoubleSide} />
+        </mesh>
+        {/* pull tab */}
+        <group position={[0, 0.2965, 0.012]}>
+          <Box args={[0.016, 0.003, 0.03]} color="#9EA5AD" cast={false} />
+          <mesh position={[0, 0.001, 0.012]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.009, 0.0025, 6, 12]} />
+            <Toon color="#9EA5AD" />
+          </mesh>
+        </group>
+      </group>
     </group>
   );
 }
