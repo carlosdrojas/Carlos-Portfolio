@@ -50,14 +50,26 @@ export function ShellPanel() {
   );
 }
 
+// Tile behind each logo: Amazon's is black on clear, the ISO emblem is white, and UTSA's has its own navy.
+const LOGO_BG: Record<string, string> = {
+  '/AmazonLogo.png': '#FFFFFF',
+  '/ISOEmblem--White.png': '#1D2127',
+  '/utsa.png': '#0C2340',
+};
+
 export function ExperiencePanel() {
   return (
     <div className="flex flex-col">
       {experiences.map((e, i) => (
         <div key={e.id} className="grid grid-cols-[48px_minmax(0,1fr)] gap-4 py-5 border-b border-[#DAD6CC] last:border-0 first:pt-0">
-          <span className="font-pixel text-xs text-center py-1 border-2 border-[#1D2127] text-[#1D2127] h-fit" style={{ background: CHANNEL_COLORS[i % CHANNEL_COLORS.length] }}>
-            CH{i + 1}
-          </span>
+          <div className="flex flex-col gap-2">
+            <span className="font-pixel text-xs text-center py-1 border-2 border-[#1D2127] text-[#1D2127]" style={{ background: CHANNEL_COLORS[i % CHANNEL_COLORS.length] }}>
+              CH{i + 1}
+            </span>
+            {e.logo && (
+              <Image src={e.logo} alt={`${e.company} logo`} width={48} height={48} className="w-12 h-12 object-contain p-1 border-2 border-[#1D2127]" style={{ background: LOGO_BG[e.logo] ?? '#FFFFFF' }} />
+            )}
+          </div>
           <div className="flex flex-col gap-1.5">
             <h3 className="font-pixel text-lg leading-tight">{e.title}</h3>
             <p className="text-sm font-semibold text-[#2F6470]">{e.company}</p>
