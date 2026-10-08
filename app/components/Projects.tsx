@@ -34,7 +34,7 @@ export default function Projects() {
               key={project.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: 0.5, delay: (index % 3) * 0.1 }}
               viewport={{ once: true }}
               className="project-card relative bg-orange-50 dark:bg-stone-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               onMouseMove={(e) => {
@@ -60,6 +60,11 @@ export default function Projects() {
                 <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
                   {project.description}
                 </p>
+                {project.note && (
+                  <p className="text-sm italic text-gray-500 dark:text-gray-400 -mt-2 mb-4">
+                    {project.note}
+                  </p>
+                )}
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.tags.map((tag) => (

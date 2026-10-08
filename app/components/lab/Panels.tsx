@@ -19,6 +19,7 @@ export function ProjectsPanel({ onOpen }: { onOpen: (id: SpotId) => void }) {
           <Image src={p.image} alt={`${p.title} screenshot`} width={480} height={360} className="w-full aspect-[4/3] object-cover bg-[#EDE9E0] border-2 border-[#1D2127]" />
           <h3 className="font-pixel text-lg leading-tight">{p.title}</h3>
           <p className="text-sm leading-relaxed text-[#3A3F4A] line-clamp-4">{p.description}</p>
+          {p.note && <p className="text-xs italic text-[#5B6270]">{p.note}</p>}
           <div className="flex flex-wrap gap-1.5">
             {p.tags.map((t) => (
               <span key={t} className={tag}>{t}</span>
