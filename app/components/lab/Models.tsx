@@ -43,7 +43,13 @@ const PIN_COLORS = ['#D94A3D', '#2F6FEB', '#E8C547', '#2E9E5B', '#D94A3D', '#2F6
 const PINNED = projects.slice(0, 6);
 // Small copies in /public/lab/thumbs keep the pegboard light (the originals are up to 3 MB).
 const thumb = (src: string) => `/lab/thumbs/${src.replace(/^\//, '').replace(/\.\w+$/, '')}.jpg`;
-const PHOTO_URLS = [...PINNED.map((p) => thumb(p.image)), '/lab/me.jpg'];
+// Snapshots from the classic site's hero, taped into the gaps between projects.
+const SNAPSHOTS: { src: string; size: [number, number]; position: [number, number, number]; tilt: number }[] = [
+  { src: '/lab/thumbs/stack-pic-2.jpg', size: [0.54, 0.36], position: [-0.83, 0.62, 0.05], tilt: -0.09 },
+  { src: '/lab/thumbs/stack-pic-3.jpg', size: [0.5, 0.375], position: [-0.48, -0.52, 0.05], tilt: 0.08 },
+  { src: '/lab/thumbs/stack-pic-4.jpg', size: [0.36, 0.48], position: [0.97, -0.45, 0.05], tilt: -0.06 },
+];
+const PHOTO_URLS = [...PINNED.map((p) => thumb(p.image)), '/lab/me.jpg', ...SNAPSHOTS.map((s) => s.src)];
 
 export function Pegboard() {
   const photos = useTexture(PHOTO_URLS, (loaded) => {
@@ -100,6 +106,17 @@ export function Pegboard() {
           <Toon color="#E8C547" />
         </mesh>
       </group>
+      {SNAPSHOTS.map(({ src, size: [w, h], position, tilt }, i) => (
+        <group key={src} position={position} rotation={[0, 0, tilt]}>
+          <Box args={[w + 0.06, h + 0.06, 0.01]} color="#FBFAF6" />
+          <mesh position={[0, 0, 0.007]}>
+            <planeGeometry args={[w, h]} />
+            <Toon color="#FFFFFF" map={photos[PINNED.length + 1 + i]} />
+          </mesh>
+          {/* a strip of masking tape across the top */}
+          <Box args={[0.2, 0.06, 0.004]} color="#E6D9AE" position={[0, h / 2 + 0.02, 0.012]} rotation={[0, 0, -tilt * 1.5]} cast={false} />
+        </group>
+      ))}
       {/* a screwdriver on a hook, a spare board, and a coil of wire */}
       <Cyl args={[0.012, 0.012, 0.12]} color="#8E959E" position={[2.15, -0.28, 0.06]} rotation={[Math.PI / 2, 0, 0]} />
       <ToonModel url="/models/screwdriver.glb" size={0.42} position={[2.15, -0.72, 0.06]} rotation={[-Math.PI / 2, 0, 0]} />
