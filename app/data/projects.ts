@@ -10,11 +10,25 @@ export interface Project {
   hasDemo?: boolean;
   // Ownership or code-policy context, shown under the description.
   note?: string;
+  // Filters on the classic page's work section.
+  categories: ProjectCategory[];
+  // Shown in the classic page's bento grid and hero strip.
+  featured?: boolean;
+  // One-line version of the description for compact cards.
+  summary?: string;
+  // Small context line above the title, e.g. the event or course.
+  kicker?: string;
 }
+
+export type ProjectCategory = 'systems' | 'hardware' | 'ml' | 'apps';
 
 export const projects: Project[] = [
   {
     id: 11,
+    summary: "Automatic root-cause response for a home-battery fleet. Matched 40 of 47 faulted units with zero wrong hardware pulls.",
+    kicker: "Base Power × AITX Hackathon · Team of 3",
+    categories: ['systems', 'ml'],
+    featured: true,
     title: "ARCA",
     description: "Automatic root-cause response for a home-battery fleet, built in 48 hours by a team of three at the Base Power × AITX Talent Hackathon. I built the response engine: a deterministic policy gate in front of a Claude planner (with a playbook fallback), a verifier that re-reads each device after a fix, technician scheduling, and a simulated inverter fleet that refuses unsafe actions on its own. Graded against a hidden answer key, it matched 40 of 47 faulted units with zero wrong hardware pulls. It runs on a synthetic telemetry pack, not real Base data.",
     image: "/arca.jpg",
@@ -25,6 +39,9 @@ export const projects: Project[] = [
   },
   {
     id: 12,
+    summary: "Model checker for battery firmware: 1.29M states in about 36 s, with 3D replay.",
+    categories: ['systems', 'apps'],
+    featured: true,
     title: "FleetFlight",
     description: "Pre-release verification for distributed battery firmware. A bounded model checker explores every allowed ordering of faults and messages across a BMS, hub, and inverter, returns the shortest failing sequence for each violated safety invariant, replays it deterministically, and generates a pytest regression. A full check covers 1.29 million states in about 36 seconds. Includes a CLI, a React dashboard, a CI gate, and a three.js 3D replay of each counterexample.",
     image: "/fleetflight.jpg",
@@ -35,6 +52,9 @@ export const projects: Project[] = [
   },
   {
     id: 16,
+    summary: "Lineup optimizer, trade finder, and playoff odds from 5,000 simulated seasons.",
+    categories: ['apps', 'ml'],
+    featured: true,
     title: "Fantasy GM",
     description: "A general manager for ESPN fantasy football leagues. It syncs leagues through ESPN's API into a history store behind FastAPI, and a Next.js dashboard shows power rankings with all-play records and luck, an exact lineup optimizer (solved as an assignment problem, so FLEX slots fill correctly), waiver pickups, a trade finder that searches every 1-for-1 to 2-for-2 deal, and playoff odds from 5,000 simulated seasons that re-run for any trade you're weighing. Includes multi-user sign-in, encrypted ESPN cookies, and a Claude assistant with read-only tools. It never changes your team.",
     image: "/fantasy-gm.jpg",
@@ -45,6 +65,9 @@ export const projects: Project[] = [
   },
   {
     id: 1,
+    summary: "Jump-form analysis with MediaPipe Pose, entirely in the browser.",
+    categories: ['ml', 'apps'],
+    featured: true,
     title: "FormCoach",
     description: "A real-time AI-powered vertical jump form analyzer that runs entirely in the browser. Uses MediaPipe Pose estimation to detect body landmarks, automatically segment jump phases via a state machine, compute biomechanical metrics (knee/hip angles, trunk lean, valgus deviation, arm swing timing, jump height), and deliver personalized coaching feedback with actionable drills. Supports standing and approach vertical jumps, includes skeleton-overlay replay with phase markers, and persists rep history locally — all client-side with zero data leaving your device.",
     image: "/FormCoach.png",
@@ -53,6 +76,9 @@ export const projects: Project[] = [
   },
   {
     id: 2,
+    summary: "Unix shell in C: pipes, redirection, job control.",
+    categories: ['systems'],
+    featured: true,
     title: "Yash Shell",
     description: "A custom Unix shell built from scratch in C, featuring process creation with fork/exec, piping, I/O redirection, background process execution, and full job control with fg/bg and signal handling.",
     image: "/placeholder-project-1.png",
@@ -61,6 +87,10 @@ export const projects: Project[] = [
   },
   {
     id: 13,
+    summary: "Synchronous buck converter on a custom 2-layer PCB, 20 V in to about 5 V out. Laid out in KiCad, assembled, and brought up on the scope.",
+    kicker: "ECE 302 · Team of 2",
+    categories: ['hardware'],
+    featured: true,
     title: "Buck Converter",
     description: "A synchronous buck converter on a custom 2-layer PCB, designed for 20 V in to about 5 V out: a TPS2832 synchronous gate driver, two power MOSFETs, a 100 µH inductor, and a 0.5 Ω sense resistor feeding an op-amp current-sense amplifier, with 16 test points for probing. We laid out the board in KiCad, ordered it from JLCPCB, assembled it, and brought it up in stages, confirming complementary gate drive at 50 kHz on the scope.",
     image: "/buck-converter.jpg",
@@ -69,6 +99,7 @@ export const projects: Project[] = [
   },
   {
     id: 10,
+    categories: ['ml'],
     title: "PathSong",
     description: "A first-person navigation simulator for visually impaired users that guides an agent through a room using only directional audio cues — a sub-bass bearing tone that pans left/right to indicate heading, and a proximity chirp that speeds up as the target approaches. Supports a full 24-trial participant study logging per-frame telemetry at ~60 Hz, testing 11 audio conditions across 1D and 8×8 m 2D environments. Extended with AI2-THOR 3D navigation and live YOLOv8 object detection. (ECE 460J — Spring 2026)",
     image: "/pathsong.png",
@@ -77,6 +108,7 @@ export const projects: Project[] = [
   },
   {
     id: 14,
+    categories: ['hardware'],
     title: "Embedded Alarm Clock",
     description: "A stand-alone alarm clock on a TI MSPM0G3507: an ST7735R LCD with analog and digital faces, a 20-key matrix keypad, a MOSFET-driven beep speaker, a DAC-to-amplifier path that plays song clips from flash, a thermistor temperature readout, and an IR sensor that silences the alarm with a wave. A 2 kHz timer interrupt handles timekeeping, keypad scanning, and the speaker, while all LCD work stays in the main loop. Measured 0.95 mV RMS noise on the 3.3 V rail and 22 ms LCD update latency, and added a gate resistor, diode, and capacitor to remove a ~4.4 V turn-off spike at the speaker driver.",
     image: "/alarm-clock.jpg",
@@ -85,6 +117,7 @@ export const projects: Project[] = [
   },
   {
     id: 5,
+    categories: ['hardware'],
     title: "Space Invaders Clone",
     description: "A fully playable Space Invaders game implemented in C and Assembly on the MSPM0 microcontroller, featuring a custom PCB and state-driven game logic.",
     image: "/SpaceInv.jpg",
@@ -94,6 +127,7 @@ export const projects: Project[] = [
   },
   {
     id: 15,
+    categories: ['systems'],
     title: "PintOS Kernel",
     description: "User-program support for the PintOS teaching kernel on 32-bit x86: system calls with user-memory validation, argument passing on the user stack, semaphore-based parent/child process synchronization, and per-process file descriptor tables behind a global filesystem lock.",
     image: "/pintos.jpg",
@@ -102,6 +136,7 @@ export const projects: Project[] = [
   },
   {
     id: 3,
+    categories: ['apps'],
     title: "MetadataEditor",
     description: "An Electron desktop app for batch-applying metadata to music files. Converts MP3, WAV, and FLAC to M4A, embeds cover art, and auto-numbers tracks via OCR or text input with fuzzy filename matching.",
     image: "/placeholder-project-2.png",
@@ -110,6 +145,7 @@ export const projects: Project[] = [
   },
   {
     id: 4,
+    categories: ['apps'],
     title: "Algorithm Visualizer",
     description: "An interactive pathfinding visualizer built with Next.js and React, showcasing BFS and DFS algorithms in real time on a dynamic grid.",
     image: "/AlgoVis.jpg",
@@ -119,6 +155,7 @@ export const projects: Project[] = [
   },
   {
     id: 6,
+    categories: ['apps'],
     title: "Portfolio Website",
     description: "A modern, animated portfolio built with Next.js, Tailwind CSS, and Framer Motion to highlight projects and skills with smooth UI/UX.",
     image: "/Port.jpg",
@@ -128,6 +165,7 @@ export const projects: Project[] = [
   },
   {
     id: 7,
+    categories: ['hardware'],
     title: "Traffic Light FSM",
     description: "A real-time traffic light controller implemented as a finite state machine on an embedded system, demonstrating low-level programming and timing control.",
     image: "/TrafficFSM.jpg",
@@ -137,6 +175,7 @@ export const projects: Project[] = [
   },
   {
     id: 8,
+    categories: ['apps'],
     title: "Rowdy Park",
     description: "A 48-hour hackathon action-adventure RPG where players explore a dynamic map and battle enemies, built with Python and Pygame.",
     image: "/RowdyPark.jpg",
@@ -146,6 +185,7 @@ export const projects: Project[] = [
   },
   {
     id: 9,
+    categories: ['apps'],
     title: "Cyclone Database",
     description: "A lightweight Java command-line database system utilizing arrays and custom data structures to store, retrieve, and manage cyclone records efficiently.",
     image: "/Cyclone.jpg",

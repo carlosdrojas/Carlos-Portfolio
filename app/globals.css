@@ -5,42 +5,6 @@
   --foreground: #171717;
 }
 
-@keyframes aurora {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-.aurora-bg {
-  background: linear-gradient(-45deg, #fff7ed, #fffbeb, #fef3c7, #fef9c3, #fff7ed);
-  background-size: 300% 300%;
-  animation: aurora 12s ease infinite;
-}
-
-.cursor-blink {
-  animation: blink 1s step-end infinite;
-}
-
-.project-card .spotlight {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  background: radial-gradient(400px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(249, 115, 22, 0.13), transparent 70%);
-  pointer-events: none;
-  z-index: 10;
-}
-
-.project-card:hover .spotlight {
-  opacity: 1;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -53,12 +17,6 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-
-  .aurora-bg {
-    background: linear-gradient(-45deg, #1c1008, #1f1505, #120c02, #1a1005, #1c1008);
-    background-size: 300% 300%;
-    animation: aurora 12s ease infinite;
-  }
 }
 
 body {
@@ -69,4 +27,80 @@ body {
 
 @utility font-pixel {
   font-family: var(--font-pixel), ui-monospace, monospace;
+}
+
+/* Classic page: Apple-style tokens, light by default, dark from the system setting. */
+.classic {
+  --c-bg: #fbfbfd;
+  --c-band: #f5f5f7;
+  --c-card: #ffffff;
+  --c-chip: #f5f5f7;
+  --c-ink: #1d1d1f;
+  --c-sub: #6e6e73;
+  --c-body: #3a3a3c;
+  --c-accent: #c2410c;
+  --c-accent-hover: #9a3412;
+  --c-line: rgba(0, 0, 0, 0.08);
+  --c-placeholder: #e8e8ed;
+  --c-inv-bg: #1d1d1f;
+  --c-inv-fg: #ffffff;
+  --c-glass: rgba(251, 251, 253, 0.72);
+  --c-glass-card: rgba(255, 255, 255, 0.8);
+  --c-shadow: rgba(0, 0, 0, 0.35);
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  .classic {
+    --c-bg: #000000;
+    --c-band: #161617;
+    --c-card: #1c1c1e;
+    --c-chip: #2c2c2e;
+    --c-ink: #f5f5f7;
+    --c-sub: #a1a1a6;
+    --c-body: #d1d1d6;
+    --c-accent: #ff9f5a;
+    --c-accent-hover: #ffb77d;
+    --c-line: rgba(255, 255, 255, 0.12);
+    --c-placeholder: #2c2c2e;
+    --c-inv-bg: #f5f5f7;
+    --c-inv-fg: #000000;
+    --c-glass: rgba(22, 22, 23, 0.72);
+    --c-glass-card: rgba(28, 28, 30, 0.78);
+    --c-shadow: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.classic .glass {
+  background: var(--c-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.classic .glass-card {
+  background: var(--c-glass-card);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .classic .glass,
+  .classic .glass-card {
+    background: var(--c-card);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+html:has(.classic) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.classic) {
+    scroll-behavior: auto;
+  }
 }

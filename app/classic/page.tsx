@@ -1,12 +1,10 @@
 import type { Metadata } from 'next';
-import Layout from '../components/Layout';
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Experience from '../components/Experience';
-import Skills from '../components/Skills';
-import Projects from '../components/Projects';
-import Resume from '../components/Resume';
-import Contact from '../components/Contact';
+import Nav from '../components/classic/Nav';
+import Hero from '../components/classic/Hero';
+import About from '../components/classic/About';
+import Experience from '../components/classic/Experience';
+import Work from '../components/classic/Work';
+import Contact from '../components/classic/Contact';
 
 export const metadata: Metadata = {
   description: 'Carlos Rojas: projects, experience, skills, and resume on one scrolling page.',
@@ -14,14 +12,15 @@ export const metadata: Metadata = {
 
 export default function ClassicHome() {
   return (
-    <Layout>
-      <Hero />
-      <About />
-      <Experience />
-      <Skills />
-      <Projects />
-      <Resume />
-      <Contact />
-    </Layout>
+    <div className="classic min-h-screen">
+      <Nav />
+      <main>
+        <Hero />
+        <About />
+        <Experience />
+        <Work />
+        <Contact />
+      </main>
+    </div>
   );
 }

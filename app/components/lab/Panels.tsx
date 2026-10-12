@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { projects } from '../../data/projects';
 import { experiences } from '../../data/experience';
-import { skills } from '../Skills';
+import { skills } from '../../data/skills';
 import TerminalDemo from '../TerminalDemo';
 import InvadersGame from './InvadersGame';
 import { CHANNEL_COLORS, type SpotId } from './spots';
