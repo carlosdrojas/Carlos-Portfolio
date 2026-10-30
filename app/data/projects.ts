@@ -98,6 +98,17 @@ export const projects: Project[] = [
     note: "Team of 2 (ECE 302). The schematic came from the course; the layout, assembly, and bring-up were ours.",
   },
   {
+    id: 17,
+    summary: "UT Austin schedule planner: every conflict-free combination of sections, from 11,473 real Spring 2027 sections.",
+    categories: ['apps', 'systems'],
+    title: "You Tee Course Planner",
+    description: "An unofficial UT Austin schedule planner. Pick your courses and it generates every conflict-free combination of sections, skipping busy times you block out (work, lunch) and flagging back-to-back classes in different buildings. Filter and sort the results, then save schedules, compare them, share a read-only link, or export to your calendar with the semester's first and last class days and holidays filled in. A Chrome extension I wrote syncs UT's course schedule into Postgres; the live site holds Spring 2027 (11,473 sections across 5,182 courses). Google sign-in, rate limits, and a Content Security Policy, with Playwright end-to-end tests.",
+    image: "/course-planner.jpg",
+    tags: ["Next.js", "TypeScript", "Postgres", "Chrome Extension"],
+    note: "Solo. Not affiliated with UT Austin. Sign in with Google to use it.",
+    liveUrl: "https://course-planner-swart.vercel.app",
+  },
+  {
     id: 10,
     categories: ['ml'],
     title: "PathSong",
