@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0D0C">
+<title>Carlos Rojas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Carlos Rojas: ECE at UT Austin. Resume, LinkedIn, portfolio and GitHub.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+  :root { padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px); }
+  [hidden] { display: none !important; }
+  /* Layout: one physical NFC card floating at center stage; layers sit at different depths and tilt with the phone. */
+  :root {
+    --bg: #E6E3E1;
+    --fg: #2B2623;
+    --muted: #7A706A;
+    --shadow: rgba(40, 22, 10, .38);
+    /* the card is an object, so it keeps the same finish in both themes */
+    --card-hi: #221E1B;
+    --card-lo: #0E0D0C;
+    --ink: #F4EFEA;
+    --dim: #948A83;
+    --line: rgba(255, 255, 255, .08);
+    --orange: #BF5700;
+    --orange-lit: #E8782A;
+    --copper: #C27A44;
+    --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0A0909; --fg: #D8D0CA; --muted: #7E746E; --shadow: rgba(191, 87, 0, .22);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0A0909; --fg: #D8D0CA; --muted: #7E746E; --shadow: rgba(191, 87, 0, .22);
+    color-scheme: dark;
+  }
+
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .stage {
+    min-height: 100%;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 22px;
+    padding-block: 28px;
+  }
+
+  .scene {
+    position: relative;
+    width: min(372px, 100%);
+    perspective: 1000px;
+  }
+
+  .shadow {
+    position: absolute;
+    left: 10%; right: 10%; bottom: -30px;
+    height: 46px;
+    background: radial-gradient(closest-side, var(--shadow), transparent);
+    filter: blur(8px);
+    pointer-events: none;
+  }
+
+  .card {
+    position: relative;
+    border-radius: 22px;
+    background:
+      radial-gradient(130% 70% at 15% 0%, var(--card-hi), var(--card-lo) 65%);
+    color: var(--ink);
+    transform-style: preserve-3d;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), 0 0 0 1px rgba(255, 255, 255, .04);
+    will-change: transform;
+    --gx: 50%; --gy: 30%; --hp: 50%; --glint: 0;
+  }
+  /* finger-drag tilt only when the page fits one screen, so it never blocks scrolling */
+  .card.grab { touch-action: none; }
+  .card a, .card button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+
+  .layer { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+
+  /* NFC inlay: the antenna coil runs around the card's perimeter, like the real one */
+  .antenna {
+    inset: 9px;
+    border-radius: 15px;
+    box-shadow:
+      inset 0 0 0 1px var(--copper),
+      inset 0 0 0 4px var(--card-lo),
+      inset 0 0 0 5px var(--copper),
+      inset 0 0 0 8px var(--card-lo),
+      inset 0 0 0 9px var(--copper),
+      inset 0 0 0 12px var(--card-lo),
+      inset 0 0 0 13px var(--copper);
+    opacity: calc(.16 + var(--glint) * .5);
+    transform: translateZ(1px);
+  }
+  .holo {
+    background: linear-gradient(115deg,
+      transparent 32%,
+      hsla(28, 95%, 60%, .13) 44%,
+      hsla(190, 90%, 65%, .09) 52%,
+      hsla(300, 80%, 70%, .08) 58%,
+      transparent 70%);
+    background-size: 260% 260%;
+    background-position: var(--hp) var(--hp);
+    transform: translateZ(2px);
+  }
+  .sheen {
+    background: radial-gradient(circle at var(--gx) var(--gy), rgba(255, 255, 255, .16), rgba(255, 255, 255, .03) 32%, transparent 55%);
+    transform: translateZ(4px);
+    border-radius: 22px;
+  }
+
+  .content {
+    position: relative;
+    display: grid;
+    gap: 22px;
+    padding: 28px 26px 24px;
+    transform-style: preserve-3d;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transform: translateZ(16px);
+  }
+  .chip { width: 40px; height: 31px; display: block; }
+  .freq {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .freq svg { width: 16px; height: 16px; color: var(--orange-lit); }
+
+  .id {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 16px;
+    align-items: center;
+    transform: translateZ(36px);
+  }
+  .id img {
+    width: 78px; height: 78px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 0 1.5px var(--orange), 0 8px 20px rgba(0, 0, 0, .5);
+  }
+  .id > div { min-width: 0; }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-variation-settings: "wdth" 125;
+    font-weight: 800;
+    font-size: clamp(25px, 8vw, 30px);
+    line-height: .95;
+    letter-spacing: .01em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, .14), 0 -1px 0 rgba(0, 0, 0, .7);
+  }
+  .role {
+    margin: 8px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--dim);
+  }
+  .role b { color: var(--ink); font-weight: 600; }
+
+  .links {
+    display: grid;
+    gap: 8px;
+    transform: translateZ(26px);
+    transform-style: preserve-3d;
+  }
+  .link {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+    transition: background-color .2s, border-color .2s, transform .2s;
+  }
+  .link > span { min-width: 0; display: grid; gap: 2px; }
+  .link .name { font-size: 15.5px; font-weight: 600; }
+  .link .sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .link svg { width: 18px; height: 18px; opacity: .7; }
+  @media (hover: hover) {
+    a.link:hover { background: rgba(255, 255, 255, .08); border-color: rgba(232, 120, 42, .55); transform: translateZ(6px); }
+    a.link.primary:hover { background: #CF6106; border-color: transparent; }
+    .foot a:hover { color: var(--ink); }
+  }
+  a.link:focus-visible { background: rgba(255, 255, 255, .08); border-color: rgba(232, 120, 42, .55); }
+  a.link:active { background: rgba(255, 255, 255, .1); transform: scale(.98); transition-duration: .06s; }
+  a.link.primary:active { background: #A84C00; }
+  .link.primary { background: var(--orange); border-color: transparent; }
+  .link.primary .sub { color: rgba(255, 255, 255, .78); }
+  .link.primary svg { opacity: 1; }
+  a.link.primary:focus-visible { background: #CF6106; border-color: transparent; }
+  :focus-visible { outline: 2px solid var(--orange-lit); outline-offset: 2px; }
+
+  .mail { padding-block: 9px; padding-right: 8px; }
+  /* show the whole address on narrow phones instead of cutting it off */
+  .mail .sub { white-space: normal; overflow-wrap: anywhere; color: var(--ink); opacity: .8; }
+  .mail a { color: inherit; text-decoration: none; }
+  .copy {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    min-height: 40px;
+    padding: 0 12px;
+    cursor: pointer;
+  }
+  .copy:active { background: rgba(255, 255, 255, .16); }
+  .copy:hover { background: rgba(255, 255, 255, .12); }
+
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    transform: translateZ(12px);
+  }
+  .foot nav { display: flex; gap: 2px; }
+  /* small text, full-size tap target */
+  .foot a { color: var(--dim); text-decoration: none; display: inline-flex; align-items: center; min-height: 40px; padding: 0 8px; }
+  .foot nav a:last-child { padding-right: 2px; }
+  .foot a:active { color: var(--ink); }
+
+  /* shorter phones (iPhone SE, mini, small Androids): tighten so the whole card fits one screen */
+  @media (max-height: 760px) {
+    .stage { gap: 14px; padding-block: 14px; }
+    .content { gap: 16px; padding: 22px 24px 18px; }
+    .id { grid-template-columns: 64px 1fr; gap: 14px; }
+    .id img { width: 64px; height: 64px; }
+    .links { gap: 6px; }
+    .link { padding: 9px 13px; }
+    .link .name { font-size: 15px; }
+  }
+  @media (max-height: 620px) {
+    .top { display: none; }
+    .role br { display: none; }
+  }
+
+  .under {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 34px;
+  }
+  .hint {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .enable {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--fg);
+    background: transparent;
+    border: 1px solid var(--muted);
+    border-radius: 999px;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 12px);
+    opacity: 0;
+    transition: opacity .2s, transform .2s;
+    background: var(--fg);
+    color: var(--bg);
+    font: 500 12px/1 var(--mono);
+    letter-spacing: .06em;
+    padding: 11px 14px;
+    border-radius: 10px;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .link, .toast { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+  <div class="scene">
+    <div class="shadow" id="shadow"></div>
+    <article class="card" id="card" aria-label="Carlos Rojas contact card">
+      <div class="layer antenna"></div>
+      <div class="layer holo"></div>
+      <div class="content">
+        <div class="top">
+          <svg class="chip" viewBox="0 0 40 31" aria-hidden="true">
+            <defs>
+              <linearGradient id="cu" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#E2A06B"/>
+                <stop offset=".5" stop-color="#A9622F"/>
+                <stop offset="1" stop-color="#D88E55"/>
+              </linearGradient>
+            </defs>
+            <rect x=".5" y=".5" width="39" height="30" rx="6" fill="url(#cu)"/>
+            <path d="M.5 10.5h12m15 0h12M.5 20.5h12m15 0h12M12.5 .5v30m15-30v30M12.5 15.5h15" fill="none" stroke="#5A2F12" stroke-opacity=".55"/>
+          </svg>
+          <span class="freq">
+            NFC · 13.56 MHz
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 8.5a6 6 0 0 1 0 7M10 6a10 10 0 0 1 0 12M14 3.5a14 14 0 0 1 0 17"/></svg>
+          </span>
+        </div>
+
+        <div class="id">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAAAMigAwAEAAAAAQAAAL4AAAAA/8AAEQgAvgDIAwEiAAIRAQMRAf/EAB8AAAEFAQEBAQEBAAAAAAAAAAABAgMEBQYHCAkKC//EALUQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+v/EAB8BAAMBAQEBAQEBAQEAAAAAAAABAgMEBQYHCAkKC//EALURAAIBAgQEAwQHBQQEAAECdwABAgMRBAUhMQYSQVEHYXETIjKBCBRCkaGxwQkjM1LwFWJy0QoWJDThJfEXGBkaJicoKSo1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoKDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uLj5OXm5+jp6vLz9PX29/j5+v/bAEMAAgICAgICBAICBAUEBAQFBwUFBQUHCQcHBwcHCQsJCQkJCQkLCwsLCwsLCw0NDQ0NDQ8PDw8PEREREREREREREf/bAEMBAwMDBAQEBwQEBxIMCgwSEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEhISEv/dAAQADf/aAAwDAQACEQMRAD8A/CzpRQAOCaXrVmYc0e1J3pepoEOB4ppGKWjHc0AH0/Sl9u1Ki7q39G0zU7q5BsId+0FizrlFA6k0BYwcE4PY1auLC6tYopZ0KrOpdD6gHGfzFdNqsC6letZ2duV8tVjjaMEBto5yOgycniujuPD19qmdNjXd9mRIoskABo1zI3+6ec/nQB5kLWUsERSxPTFRyRNGdj9R1710s2mSq8UKPnaOZei56kL6gevc10OveFoNCZt0iSgFCAMgsHXcCOOcdxRYDz6K3lncR26s7HoFBJ/KtiXwr4khhNxJZTBRySV7V2/hrUbOzDQWkBMxBLs3yhVAyeRyT6Yq5Y+I9MumCz2m0/d8yLduznqeeapJWKa0ueTJbSN82OB1zSPAEwAGJYZB9fpXt0uk6fqX7xSiSMAu6RT09eBW9Y+F7XT4TNqxDQRg4MA3sSegHpzQoknzoLSd13KMgnFQOhBx+FetapBbz6jJp8KsIkG52bJCrjOScV5/c6Rc7RcxxskTdC/yj8CetLZgYJGKTFWbi3e3IDFTnn5TmqxpALjHfrTe/NKaOtABml4+lJx60Z5xQA7IIwKTAoHrS7vagD//0PwsFOK96bg9BTucVZmxucU4EdabzVqK1mniaWIbtvUDkgeuKBEGSeBVhIZJG2ICT/hVzT9Iub8lo8KqjczHoB616HoWmJp8Yu0DM8qEhzxhQcED6/yoA4i10i4QJNKREH+5xuZvcKO3ueK9NstB07R7Zb7XpJJp3UPFDnC5P3dwzgeuK6G60yOO7h1jBTT7hIn81QCQrDMijvlQpA9yK4Hx9rP2/UluoIjFbzEmOMHOI1+UD9OaeyGtWXb3WtNjcW1jJE8wBkldCVijxyQMfePb61z8GunU7lhdIYICrIfKOGweucnnI6jvVnQPBr6vvuLcngqx8wbUK/7x4yPQ0sukS6XdJe6hcJI8jHMaYbIB6cdOKTC1ipdaNebreHTv3ttcpuSZeV25w2c/dK45HathbO88SXMjLcJEsOFiMoYBVUYHPT5qu6WkN9bTaVpshhVQZXHsSNwA7HAz74xW3qmhyaqy2llLDbWSqCrBjvb1LjuT7cU7COW1iLV/D5tZSgMEi5EowVZgx+6wyDx1rpNHWHVtObV9LkNpdQMFlCrwc8hgCO9M0CcWkk/hnWo0m02ZSTHI33WHR0P8LfTrV3QGtdNmki0OKQxgMTvyzMwGAqjqQCM0KSG72N9tX1XV7Ai+uDcNGC0cqQx43IOm9cHp2NUdE8Tqu+HWiDE4C7l+Vzk88dwMVlS6UVsZbhGCeYRtMbAr1Gcjg5AzjPPaufdLSa9WYyl4gzhtpwSyjoAemTinzMnoel6nMJJxYeH7NZUjXEkKsGllLc7/AMuijivPvFGkm/jje4mm3kYjE3GMdU29Aw9K0LprWC50+5gufJuBb4eVRvQMpJAOOeAQMjNXtV8UTXafYfEEaSOWDJOvKkEY5Pv69RTuETxm+0C/toDcgF41PzYHK56E+x7HpWE6lDsPXvXt1leGTX7S24W3VRCQTneHJ6k9+aoXXhvT7i8ex1BEAYsI54RsZSD/ABL0YDuBzUtDZ46aTHpWnqWmT6beSWk4x5Zwe4IPQg9wRyKkuIfsFqltIv72dVlbPVVPKD8Rz9CKVhmT0HNL2yaO1Jnmgbegp5pcH1FA9aT/AD0oJP/R/C0EjilHvSdOaTkmrMiYKMgdP5Vbs4rgXK+RncPT0/8Ar0yzi858uDjpkdq9A0O2M7BLdcDcAqk8fU46mhASeHLOdZSt1GyxS4JIHJUdgK7B3tmuYbd18iHOxcnoDxn/APVW9q8M2g6eL1VXeyiJNwzz3b6Z6VwMmkXV9ay3V9KWkdgAevy9TjHT0qmPzNS/1Mvp0enWZYtbHb5fTJUbmx+Z+uK4O+1C41iRFkP+oj2RAADjcWOcdTk13enyS3lzLZSFMFSQ2PmBHQ5HNZbLDdWD3whhhljkKXOxcsp/hlXnGOmRS6AaXgfS7S6ux/acjMAjCOPOFJI6knk4x0WuFuZrvUp3vIAQNxCg8ZHXGB0612Wg6Vqq6ijldzoPMWQc/Ljkj2xXaHwJqlxby3cW1ZLaF7kIOrqFByR9CKzlNLQtQbOF0eNrEJcR2xhyQXAOcZ4B/wB09K1D4b1S8vFhtN4j3AxgEgbGPzIe2VPT2NdHoVnHqEDB2wJQ6bccK0YHHuC2MV6/oenxWmgXTy5aSCWCMHr97qQR+NVzpaCUGz56v7Gyhj8m0XbcsVUZ7EsRz6+tdHHp95YWUN/dyMEif5pI+GJxycj3r0my0C08Q3MAOcQvCZZEjXJErbeTjORnHFdZqXhHQ/D2tTeH9RAZbgM1jPKzKmT1jfnAP1rCVVJ2N40W0fOOuC5k1H7REfOWVlXeAFDN1BOOMn+dcPdWEJskmKnMkuEAPVV4bPvmvTrCGC2hutCuT5bSufKOfmDgHH5nvXAQ6nNY36W88SvBGRG6HsFP3lPZh+tbKRz8o7+xr6DSJdWnI2QkR/MeCWPCj8AT7VTmGqQ2Vu9q7Okud0UoB2rn5c55BP4V3cwl1DR0j0MQCzt/MuHVgxdWJwXwM59PRa4OHUJjK39mK00kjAlnHLMDjP8AhVsk6jRYrf7MtzcRSNKhEo2YyVHbB5ODWpp9nJq1ndajArbkcTLu5BJ4JHpnvXB2Fpryat9uhy8yPleeuDyB2/CvT73XLay02TXrGJYleVY7y05AEnUkDtuHT3oQdTgfG+nRN9nvAm0tGFkHXBB5GP5e1eb3lzJeXct7Ocux4/kB+AFexX+q/wBrFVQIADjDDPyn39cV5Fqah5yNnl4OOBj8aTY2Y55pR15oIGaB70CDjtS7aTpSZ9zQB//S/CzpxS8Ugp/XirM0XrNvnCHj39/WvR/C7P8A2pDPtzHGVdx2Kg15pbK+9WXJwa9Z0TNlpMjTYBk4IHX2poR3Pjm/tLxSkDNnK+UOwGOR/OuUtdIZpMpjylXc8hbC4Xr+PtVGzMt5cxwS5OAdvr8oyPzqXxHrFtClpYW42pFFvkjB+/ITnn6cU+gLsdRHpjS3Bl0wbDtLLngnaOD+lQaJpyXurSw2yriVGLr1CSEfMv0J+ZfatKbUxYvZ6pI4O+2ZJcH+J1x/U1H4XgvbC5jith5srKMMOrxgfzwazm7alwjd2PYPh3pNzbTQxrFFeTOxhELHbxJzwTwMY4HvXqmuS2vh6/kvNSjVba4tpbGVgATvb5mHbOAQoxXPTeDfEviiPT9P0u0ls3mzM8v3X8uMZIX67gAfWvePht8B/AMU03iS/wBVmlSxVDsuiHYTt8xXyXyTjgY7sfauKVWL949KnRlbkR8Q+FY9I03XYNI8VyyWti115hlK4kEbAFQc4+9xz2r2HxgmkWGq6ppdvLHHa6kqSwMrAqgVPlXI/iJyPxr6o+J37Pnhrxpoy+IfG95HDqCoTFHAFWUjny0ZQcbR1PHWvJfh5+wN4t8bXb6xr961lYKBHbJOjCSRRyX2ZG0E5xnk0PEQfvNgsJUjaCVzyDwP4k0rwyvlXyrLFexrH5aMN0MqPlWJ/uK4Bz6Gvqvx7feEr/4aXfiDxi9lLLPmGO1jIfMjH5QpIyQR8xYcAfSvWrP/AIJ1eGo7dEtNTuUwuCzoCffBGCAfTmnz/wDBPfwlaxKZ9Uu3Kcr83QenOePauerUpStJ3OujRrR5o2R+Mmu+HtajtW1G1fEL3IjtI3BMhCjOQeuAOvtXJWGnXUl1Kl9t8xSScg4PfIr95bT9ljwT4di+2i3e6mTK+ZO28iNhhgo6Lkegr4b+MHwFk+HXiT7XpsH2jTJyXtnbjr1iJPAPYZ61tQxkKjcTkxOBnTtI+FLC5ufDuoJqdhK25CZAF+YEOMFcdwR1FNhvbSLxJJqECrbtMQPJAygB6jA7enpX0hf+HbafRng0jTv7PmLeUr3KhUU91J9Dkke9fML6Zeab4ifSJE3XKy+W59v7w9sc12wnfQ8+pBxPQ1exhiuba2lSWOVVlgJOHSTvj6jP5VzEt5f6lbXI1OMFZoBvcja2UYEOfeuVutRns7+SAyY8o4AXBPtyKvwXjrpMiKxae5253ckRodzfmcVo2ZtaFi3tBBC6r8zYOD7Y6VyOrCTyzJJh1A4J613OkMt6pU/wnI/Ht/Sua8SxKBsj5U9PUEdjUoZ51KMtkcZqLHNWp12YGOfSq3OKoQoXNHl+4pKMr/doEf/T/C37vApQ2CMU05oGTVmZowXDJgjtXqXhRobq0H2kk4ly5/2T/wDqrymEL13D6V3egM6RHY3ysu0npz2+tNMNzpb2+itdTE1uORITj0QcY/KuXk0kanru2Nv3UjBgx7Anp+lXbFCm6+ueRJIYkB7AHBNSXF0lqWER2o24fiuQKTYIg1O9kMAilyGxuCjrt7GvfPg6LxpZnks1uXgQFhM2xEAPHze/tzXlXhfwhrfjTUI20+ISlQis3RQq+tfpb8K/g5qTaFHounwCR9we4lPyh++SepAJ4FcdarHa52YalJu6OQ0HxX4rtJJbucPErLsMxXIVMk7IgecZPLHvTrD4naPb6xHPq+lteojbVmkfBBHQkjk4PSvs3SP2fodSCW/iB2kjUg7F+Uf/AFxXS6/+yd4R1CzafTkaF8ZUZG3d2OK5XXorQ7lQrb3Mr4RfEH4U6mBepb26XDtyZOWBHH8RJr7L0rxZo19CTC0T9ht9vSvy0vf2d9Y8Lar9qRwCr7x5fCnsQR79frX0b8Mv7S01fs9+5Zy2Pr6GuKtiIX91no0aba98+408RW8K7SPl6CsK+1y0kXc+FXqa5WCC9uLUyDJAWvKPHOrzaVYSCJjuIIHpmsZV3pzbHQqSs7bnTeKPiJ4W0YOtzOikDBGeua+LfiF+0F8PHE+j3xW5jPy7Mb159RXi/jTwl488U3DMly6F3IXH93uT9fStDwV+x7rWvt9u1eVo0OcnHJz1ropSw61cjz68q7fLFaHmWtN4Q1e2kudJleGGXhoUfKfTa2QD6V8pfE/QZNBt11fRJXuLV18qWZgDIhJ4VmHfbX6eaj+yNaaLCxsbyTY33w3OPce9eVeIfgl/ZHh+7sbmNZonfe6EZ34747HFddPFU0/dZxVMPUlFuUT8j4WWBzKoyST1NbtleCLfOedyFAPqMCvT/id8Jb7wna/8JFaIf7PlfYpHVGJ+6a8gNvNbhGbuQefSvQjNSV4nmzi46M6jT9RGmWx3DLfKcDsBSXtys6lnwUcEqfrXOrIX37jnjkU22ec27Qk5Q5IHp7irIOfuchiG5PSq2BU9zuLe+cVXAzwaskMEHd0p3mH1pB1p/wAvoKBn/9T8LD70qkGm+1BqzNluIDfncAB1zXSjVI1VRb8BRj/IrjwTmpI3wwJ6A0AeneXJc2sS8hY139OvOf1rs7zw9FfxC0gXpyD6sRn9abYyIdMW6hUECLd7EcD+tdZ8NHbUddgjALL5scahumMj+lTJ2Q4q7P09+F/wO0Hwl4O0q3ghBvJbZEdj1LSYZifXHOK+s9G0mz8MaciRZjEantyT3J9ad4WsWuJrWNVGI0B59hiuxvfA8vih2ha6eGMcHyzgkfWvk6taUnY+rpU4w17Hm+o/E2y0Xdd6xewabbIOrsDKw+nb8s147r37cPwVsrdrOzvr+6lRgjFMjPOPlHGcd69EuP2QPCc+ptqV8huyX3ASyE985OetaWmfskfD2Ms82k2TM0hbeYtzfngVvh40Y/xG2FadWVuRJHmUXxu0e71CA3zzRwXIRlF3GVOH6EHHPWvpaw8G/ZLqO8iwyvg/nXX+Hvg74c0qLM9skuMbfNG7AHQDPTHaut1BFslEcYHGAK5q1ODn7mx1UuZq0ty7p0VvBYOhyeCK+fvHNgt/eGFBxzxX0HpKNLCzN9K8d8Sr9m1wMR8pHWs6qvGxrCFmfM/ifVtM8D3EMV60MUsoLr5voPQDkn2qL/hqH4Z+HJn0jxBe30c0cXmSBYjGEXG7OOCeOe9fT0/gHQPFRjvdRtIZ54gRE7gFl/3T2rxvx5+zv8PvEt1Jf+IdI+0Xjld00oJYqowBn0xxW+DdBR/eXOTFKte1KxwVp8dPAni6M3PhDX0fPSO6IAb25wRW3aC28TW7STqNzDBCkMp91PeuZk/ZP+Hl03labpKouzYASRt91xXf+GvgP/whESyaZ5kUa8mNXbH61z1OS96TY4ubVqiPnr4vfC631HwdqmiQw/JNA0qDuJEGQfxr8bNQsbi2f7HOclPlz7DtX9E/ie2eePZIMrsKnPU5Ffgr8WdOOg+KLuHHEVwyH25Ir3stqOUNTwcfTUZqx5Xa2+5pHY8fMef8+1Ntp44bomU4Ty3UfiP8as3Ba3td2fv5wPauTuptx+nFeqkecyF23HJNQ00Gl5NUQLmk+X1NBGRTNv1oG2f/1fwr5NJS8nk0YzVmbD60nI6UHA5o60AfdPwK+E2nfEaws1v72S0W4hMEbIu5PMAy3megzgCvXtP+AGtfC/x9pHhK6IlS7IliuU5B2tuYfgB+teuf8E4PDdt4k+H0j34EiwatNH6lV8pGwfrnIr698e6HBbapDFcJuk02bfbueoSQbSPyIrwa2MqRqzg3pqfQRwVJ0ITitdD234e2Ql3yuc4AQV7rpGnRW4BZevJrxn4bbWsfNPGSTXtVhqMO7yV7etcVOK3Z2pN7HTR20DrkIuPcUM0EIJwM+1PF5F5OVrm7y+CSEDFayaiOEbvU0Lq6IgL9q88Pn6pdnYD5anr61f1bUkt4Va7cJGxxk8e9eM+NP2jfhT4Aha31rVba3k6BS4LfkMmsWuZ6nVH3UfR+nWZW1baOnFeSeJNPmubgttBx371yfhb9orwnr2jG90e+inibupryrxP+034J03xOmkX+oQQFx0dgKmo04qy1Gk1dtn0l4VkmRvLlGGB5X+or1WOGG5jBZR+NfMFv8SvDuowx6jpF1HJ/EGRgQR+Fe3aH4sR0jS6+XeAQfXNFPlJqRdrnYDTIo23BB+VZGrWymBhtHPFdLHewugZeQea5vVLpGBX+GqqJJGEbt6nzp430qJYJQvGPmFfi/wDHD4X654q+Kd9oOi2+8ykXeegCt3z7mv2t8aXUTyGFD1Bya+RLjQ7a++IzXEefOltlgfHaNXJz+tbYfE+xjJo462G9rOKZ+QfxZ+GDeANAs72S5M1wJfs17HtwsUhUsgVv4gQDn3FfOrkucmv0s/b4sLLw5p+l6RAMSXd/NcN7pFGFH6vX5nZ5xXt4KpOpRU576/meRj6dOnXcKe2n5D/50DrSdeaOvNdZxJCnHSk4pRS/L70CP//W/CsnsKKKXFWQxlL1bBpBQOuaBH7e/wDBJ7RZpfCvirVCx2G+gjVew2REkj3O7H4V9keOvC/2bxFqetQyM3mwIuxjkbkJOfy4r5I/4JX6vBp3gHWrCd1/0jUTt5xhhGuAfrg19/8AjuHT3827kDI4QqwwSGGD+ozXy+MSeJlfufWYRS+qK3Yo+Bb1l8PxtF95h/Wu106S5aUyuxxjGK8i8EXTjRo488rkV6PaXrrFz1FYSqOGiNKUtD0s61Hb2gRmxj1rhz4rhvtQNrZt5hB+bbyBXg/xE8bTC+TQYLgQGQZlk/uJ6/U9qydC+K/gTQZRomhObucA+Yyncd3qzc1cY1Kq0Q3Xp03ZvU+j/GOmnxL4ek0iZ2j3DKyJ95T6ivkaD9mvwqL37Vqqpdu0m9mdASfqTmvddN8a69q1q1w1r5ERI27+GYUPNfmaI3NxDGjjLkHJHtxWjptbsv2zkuWCPEvEnwK8MxkXWmSyWucLsgO0HHqBXEzfA/wqI2N7ZrOWPMko3MSe+TX1JLpVveOLo6pCU5IjJAxXJa22jQ2r2kGqGSVySCoBVeMcVFSNxwp1bJbnifg74K6PoV952lvNFFvDGHefLJB9K+x7fd/ZixMcsq8Y7Gvm9Jr2xtE+x6pG8yncfMGATzgfSs3XPiL4y8Owx3+xbqBXPmrD8xC4yDx+VRCjzOyeop1pwXvo+rtA8X3KSNp95wU71f1bX/LVmRsivlDw58WdE8WxR39jJtk7qT8w9iPYivV7u9aayEsZ4cA1niIzpvlmTRrQqpyicj4l117q8+XjYeTXm/h7SjqHiWPXRMYyrPDjsQeh/Qiuk1Aby5bpiuS8I6qW8QQxWwLRxk7hg/e9T+NZ2/d6jpx5qnu9D4U/4KWQ39t4r8MwyAfZ2sp3U9/MLqGz+AFfmRnHTtX6Z/8ABSjxJFqnjHw9pMfLWllK7n0Mrjj8lr8zK+py9Ww0D5nMP96mPOcUmaTnrRXacVx2cGn7qjNHzUCP/9f8LMYpDnPFHelNWS9hM4pppScCmDn6UCa0P0I/YF+KGk+HfGV58PPEczQ22thWt5Q20R3EWSvPbcOK/dfQtO1SXRZYbq5M0DFtrOMuVI5y1fyV2V7dafdJe2EjRTRtuR0OGBHcEV+4nwC/4KL/AA5b4fWnh/4pSSWWrWkKwyylGeOfYMBwVBwWxyD3rx8dhW5+1it9z3cuxkeT2NR2tsfaGh2qaTf3GlngRSkAex5H6Gu1aM8ADAIr5U+GPx58PfGDVr/xP4cZvswujbgONpOxVw2OoyDx9K+qbC8iu0Cg4ORivKxFNpnXSmuZpPQ+Mvit8KvFHi7xvdPb3Lw20sKLsQ4JwTxn9a8P8S6H8R/g3pMk/g/RftLog3SE7mK55I6k+tfqle6Rb3eLvaN4GMjrWBqWk2txYPG6KWxwSO9aU66SUZbG8KMOdyfU+KvhnZfGj4h6Hb6xc38MfnxRyCEgjaS2HU89V7V9e6R+zt4tuZ5op9YURrEGjYR8lznIPPTpWLa+FdO0i7g1SKMLLEMErwCM5wQOOtep6Z4m1qcsIb1xJKwZiWxhR/APb9a1UYbwVzpeEx043pTVvkY3/DLPiKXR0vptXUzkLuiEZ2jJGec+lVX/AGT5k1OAXWru1v8AP5oRdrcdADmvQH17xVg232q42B0ICycBR2zVbVPGGtWkbG9uJc790Z8zonGQcetXLlas6b+8z+qZs3yqf3WPmXxz+zJq9jojHQ9Yk+2yXrBHl5SO3BPUdzgV8P8AhYfF+08b3fhbUovtkUKITcRZ2EuT8nPBIHJr9GvEGuHW5yLi7nMIlEyRByNrAY6jnB7jpWRYQ6dAd0MKJ6BRjJrnlOnCDTWp0/VcVSV8VP5Hynf/AAs1bT79dQ02T7DczMGZAMoTjnj1NfX1npl1p/hS2fUeJfJXcP8AaxzW7o2jWt7c/ar1A4QjGe1ZnxG1mOCNbeI4VBjArmr1XUST6HnRpxpOXKeU6xcIkbsDzWUljr+laKf7N2qsh2tIR86A9SK43xb4otNF0m61e8fbBZwvcSn/AGUBJr5y8Xft8+B7Dwi0PhaCW91GWLasbqUjRiMZcn09B1rWGGnUUVGJjHEQp80pysfDv7V3iuLxD8WbuztJ/tEOnqtuJCclnAy5J+tfM4ORVm/vptRvpr+4OXmkaRz7scmqoIr6qnBQgorofOVJOc3N9R4OeKX6UwU4YqzMcOaOaTOOlG40CP/Q/C2g9cUg4FGM1ZnfQbzTMGn4OcUuDigEyHIzT880h601Til0Hc+2/wBkH4hf8It4tl8N3kmy31VFaIk8C5j6D/gSkj6gV+yPhTxX5oXcRkYr+bDTNRmtnV7d2jkQh42U4KspyCK/Zzwv4o1LStA0fW7pi0V/aQS+Z/tOgLA++c14+YUbu66np4Oq0rdj9KNF1mO5iK9c+tWNQi3KXTkdOK+dPBXjm1nVWVxjjjpX0DpmqRXUe/I+fgflXkRhbR7nsQranL3k12qlAu+uTuNSuLOQyQxDI7MD/Svck0aG4BuYSOQP0qI6Rp8ykShffAFbQjZ/FY7oV5w/hs+e7r4reK7R/ItNGaVMfeDYB/PmsfUPGWpazCPtdqYG6bWJyK+ipfC+iXDbpcjHqcVi3PhrRC/7qRSR6n1q6kpJaSN6eLqrVPU8Kt5WRQqLkn0rrNEtZp5BJMOPU9BXbx6HY5Ys8aovYYLHFZt3rGl22Ybcj5Dgj/GuFU3J8zMMRib6t3ZtpfxafbOyHGF718zeMvEbXd67FsgE4Haui8X+M4lgaOF8YyD/AIV8watr1xqN1JBYguUVnc/wqqgkkn8KuNPmkedUqXR4J+1f8So9G8DnwlZSf6Xq7ASAHlbdTlj/AMCIA+ma/MtmzzXZ+PvGuqeOfEdxreqH5pHwijoqLwqj2FcRX1OHpeypqJ87Xqc83Idn0pwPWo/anoBnk10GNx68UD2puT0/WnUx8o4eop3zUzccU7dQS0f/0fwtNAOKQ0cdqsyA9aZ0zTjTDxQCE455ph54px4FMNBbQ4FlOVr91fhPoEfi79nrw7NMoctpyLn3XIH8q/Ckema/oP8A2O0j1H9nTw2T/DbSIR/uyuK8nNNIwfmejl+spLyPniW+8Q+Bb5rclmiU8E9cV654X+Oaxw+TdSbSFJyTzwK9G+JvgCK6BnjUbuegr4z1vwrNY3DJtwwJxivOi1e7OmSadj7F039pNJdI2G6EecjG4bl4JzUWi/tAQG3mknuVG8s6c9FBwTj6c1+VHxAj1fw7c/6KZPIkBb5QTgjg5rzq28eahZQb4piTyuCcnbjn9a9VYeE43RyfWqkJWZ+1Unx4hu4rS6SZUtr2YgkkZVBwPzzWPrfxisrDULm2glXbEyuDuxlSDz7ngV+OKfFzUxDFaZKxwkbVB445/nVi7+IuqX8kepNIQSSh6ngDpTeFuX9ekkfoev7Qd1Ks1283lPKADg8Kykgtn8qs6P8AFq71J5LiabdtG1iT3HevzRtNb1XVJm062DSFmGAOmCSTn0619SeEtEu47OO3uWLMQDIe2T1Fc+Ipwpxsh0qk5u57XqXijUvEFybLTySGbBc9BmvTrLw2ul+Dr+RU+b7FO7MerERscmqvgHwhAkInI6c9K9o1qzjXwrfxkYBs5x+cbV511zKJ3xjaLkz+ch8Fj9TTR6U51KyMp6gkUyvqOp86x2M04CkB9aUHPNUSP6e1FM7U73NBSY6jJpAeeafn2pCsf//S/Cw0mfSijBxVmQhpDnrS9OKQ9Miga0I+BSdafjNRZAxQUaekaXd63qUOlWI3SzuEX/E+w6mv6D/2PbKLTPgtpWlxSeYtuZo9xxyRI2f1r8Z/gn4cjjtLrxnOQ5j3W8Kd1YgbmP4HAr9dv2IdSk1H4ORTy9tRvE/ATHFcucUOXBwqPdv8LM7stlevJLoj6/1fRINSt9ki8evevnDxz8OIHUzLGOCTuA5r6uQlTyawNasoZo2LgY7j6+lfOx97c9eUbs/NDxP8PnnV9yF+3I7V8o+L/hJZvuMUXlHr8oxya/XbWNBtA7BQAD0ryjxF4F028hZmVQT7V006zgzlrUYyR+P8vwnuY5DukIx6Dmuj0H4VSTyCGaVymcleg5r9DT8KNEMLMCeCPrzTLD4caVZz/uuVJ5B65FbVMbK2jMaeFjdNo+d/Cfw0ttOCrawjd3bHJP19K+kPB3g1HdFkXd6murtdDs7ZQsQxXqHhnT4VXIAAArzZVpSd2ejClGKsjoNK0iKztljVRx6VF4rh/wCKdvkJIzazD8NjV2NvCu0fSuZ8Yrs8PX2P+fab/wBANRTd6iuVNe40fzn+J/D0mkSi8gJltZidkno3dW9x+tcmMdK+hPDNqniXQr3Q7sDa6Mysf4WXJBH5V8+gYyD2r7mvSUEpLZnyilfQMd6XpQKX1rAtIMd/Wnbc0nX8aUHBwaCb6igetJ8tKRupuxfekN7n/9k=" alt="Carlos Rojas">
+          <div>
+            <h1>Carlos<br>Rojas</h1>
+            <p class="role"><b>ECE @ UT Austin '27</b> <br>Ex-SDE Intern, Amazon</p>
+          </div>
+        </div>
+
+        <nav class="links" aria-label="Links">
+          <a class="link primary" href="https://carlosrojas.me/resume.pdf" target="_blank" rel="noopener">
+            <span><span class="name">Resume</span><span class="sub">PDF · carlosrojas.me</span></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0 4.5-4.5M12 15l-4.5-4.5M5 19.5h14"/></svg>
+          </a>
+          <a class="link" href="https://linkedin.com/in/carlos-d-rojas" target="_blank" rel="noopener">
+            <span><span class="name">LinkedIn</span><span class="sub">in/carlos-d-rojas</span></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+          <a class="link" href="https://carlosrojas.me" target="_blank" rel="noopener">
+            <span><span class="name">Portfolio</span><span class="sub">carlosrojas.me</span></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+          <a class="link" href="https://github.com/carlosdrojas" target="_blank" rel="noopener">
+            <span><span class="name">GitHub</span><span class="sub">@carlosdrojas</span></span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
+          <div class="link mail">
+            <span><span class="name">Email</span><a class="sub" id="email" href="mailto:rojasdamiancarlos@gmail.com">rojasdamiancarlos@<wbr>gmail.com</a></span>
+            <button class="copy" id="copy" type="button">Copy</button>
+          </div>
+        </nav>
+
+        <div class="foot">
+          <span>Austin, TX</span>
+          <nav aria-label="Social">
+            <a href="https://instagram.com/carlosroja5/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://x.com/carlosroja5_" target="_blank" rel="noopener">X</a>
+          </nav>
+        </div>
+      </div>
+      <div class="layer sheen"></div>
+    </article>
+  </div>
+
+  <div class="under">
+    <p class="hint" id="hint">Move your cursor to tilt</p>
+    <button class="enable" id="enable" type="button" hidden>Turn on tilt</button>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const card = document.getElementById("card");
+  const shadow = document.getElementById("shadow");
+  const hint = document.getElementById("hint");
+  const enable = document.getElementById("enable");
+  const MAX = 16;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const touch = matchMedia("(pointer: coarse)").matches;
+  const clamp = (v, m) => Math.max(-m, Math.min(m, v));
+
+  // current and target rotation in degrees; start tipped back so the card settles in on load
+  let x = 22, y = -14, tx = 0, ty = 0;
+  let source = "idle", lastInput = 0;
+
+  function setTarget(rx, ry, from) {
+    tx = clamp(rx, MAX); ty = clamp(ry, MAX);
+    source = from; lastInput = performance.now();
+  }
+
+  function render(now) {
+    if (source !== "gyro" && now - lastInput > 2200) {
+      tx = Math.sin(now / 1900) * 5;
+      ty = Math.cos(now / 2600) * 7;
+    }
+    x += (tx - x) * 0.1;
+    y += (ty - y) * 0.1;
+    card.style.transform = `rotateX(${x.toFixed(2)}deg) rotateY(${y.toFixed(2)}deg)`;
+    card.style.setProperty("--gx", `${50 + (y / MAX) * 45}%`);
+    card.style.setProperty("--gy", `${35 - (x / MAX) * 45}%`);
+    card.style.setProperty("--hp", `${50 + ((y - x) / MAX) * 40}%`);
+    card.style.setProperty("--glint", Math.min(1, Math.hypot(x, y) / MAX).toFixed(3));
+    shadow.style.transform = `translate(${(-y * 1.1).toFixed(1)}px, ${(x * 0.6).toFixed(1)}px) scale(${1 - Math.abs(x) / 120})`;
+    requestAnimationFrame(render);
+  }
+
+  // Cursor / finger fallback: tilt toward the pointer
+  let dragging = false;
+  function onPointer(e) {
+    if (source === "gyro") return;
+    if (e.pointerType !== "mouse" && !dragging) return;
+    const r = card.getBoundingClientRect();
+    const mx = (e.clientX - r.left) / r.width - 0.5;
+    const my = (e.clientY - r.top) / r.height - 0.5;
+    setTarget(-my * MAX * 1.6, mx * MAX * 1.6, "pointer");
+  }
+  addEventListener("pointermove", onPointer);
+  card.addEventListener("pointerdown", e => {
+    if (e.pointerType !== "mouse" && source !== "gyro") { dragging = true; onPointer(e); }
+  });
+  addEventListener("pointerup", () => { dragging = false; });
+  addEventListener("pointercancel", () => { dragging = false; });
+
+  // Let a finger drag tilt the card only when nothing needs scrolling
+  function fitCheck() {
+    const fits = document.documentElement.scrollHeight <= innerHeight + 1;
+    card.classList.toggle("grab", touch && fits && source !== "gyro");
+  }
+  addEventListener("resize", fitCheck);
+
+  // Gyro: tilt relative to however the phone is being held, re-centering slowly
+  let base = null;
+  function screenAngle() {
+    return (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  }
+  function onOrient(e) {
+    if (e.beta == null || e.gamma == null) return;
+    // map to the screen's own axes so landscape tilts the right way
+    const a = ((screenAngle() % 360) + 360) % 360;
+    const fb = a === 90 ? -e.gamma : a === 270 ? e.gamma : a === 180 ? -e.beta : e.beta;
+    const lr = a === 90 ? e.beta : a === 270 ? -e.beta : a === 180 ? -e.gamma : e.gamma;
+    if (!base) {
+      base = { b: fb, g: lr };
+      hint.textContent = "Tilt your phone";
+      hint.hidden = false;
+      enable.hidden = true;
+      card.classList.remove("grab");
+    }
+    const db = fb - base.b, dg = lr - base.g;
+    base.b += db * 0.004; base.g += dg * 0.004;
+    setTarget(-db * 0.9, dg * 0.9, "gyro");
+  }
+  function listen() { addEventListener("deviceorientation", onOrient); }
+  addEventListener("orientationchange", () => { base = null; });
+
+  let asked = false;
+  async function askPermission() {
+    if (asked) return;
+    asked = true;
+    enable.hidden = true;
+    hint.hidden = false;
+    try {
+      const state = await DeviceOrientationEvent.requestPermission();
+      if (state === "granted") listen();
+    } catch {}
+  }
+
+  if (touch) hint.textContent = "Drag the card to tilt";
+  if (!reduced && "DeviceOrientationEvent" in window) {
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      // iOS shares motion data only after a tap: the button, or any tap on the card that isn't a link
+      enable.hidden = false;
+      hint.hidden = true;
+      enable.addEventListener("click", askPermission);
+      card.addEventListener("click", e => { if (!e.target.closest("a, button")) askPermission(); });
+    } else {
+      listen();
+    }
+  }
+  fitCheck();
+
+  if (reduced) {
+    hint.hidden = true;
+  } else {
+    requestAnimationFrame(render);
+  }
+
+  // Copy email
+  const toast = document.getElementById("toast");
+  let toastTimer;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+  }
+  document.getElementById("copy").addEventListener("click", () => {
+    const addr = document.getElementById("email").textContent;
+    navigator.clipboard.writeText(addr).then(
+      () => say("Email copied"),
+      () => {
+        const range = document.createRange();
+        range.selectNodeContents(document.getElementById("email"));
+        const sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+        say("Selected. Copy it from the menu");
+      }
+    );
+  });
+})();
+</script>
+</body>
+</html>

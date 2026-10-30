@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [{ source: '/lab', destination: '/', permanent: true }];
   },
+  // NFC business card: static page in public/card.html, served at /card
+  async rewrites() {
+    return [{ source: '/card', destination: '/card.html' }];
+  },
 };
 
 export default nextConfig;
