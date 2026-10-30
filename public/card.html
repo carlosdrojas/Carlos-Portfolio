@@ -303,11 +303,12 @@
     font: 500 11px/1 var(--mono);
     letter-spacing: .12em;
     text-transform: uppercase;
-    color: var(--fg);
-    background: transparent;
-    border: 1px solid var(--muted);
+    color: #fff;
+    background: var(--orange);
+    border: 0;
     border-radius: 999px;
-    padding: 10px 14px;
+    padding: 13px 18px;
+    box-shadow: 0 6px 18px rgba(191, 87, 0, .35);
     cursor: pointer;
   }
 
@@ -430,7 +431,7 @@
   }
 
   function render(now) {
-    if (source !== "gyro" && now - lastInput > 2200) {
+    if (source !== "gyro" && now - lastInput > 2200 && !reduced) {
       tx = Math.sin(now / 1900) * 5;
       ty = Math.cos(now / 2600) * 7;
     }
@@ -494,36 +495,96 @@
   function listen() { addEventListener("deviceorientation", onOrient); }
   addEventListener("orientationchange", () => { base = null; });
 
-  let asked = false;
+  // If motion never arrives, say so instead of failing silently
+  function expectMotion() {
+    setTimeout(() => {
+      if (!base) {
+        hint.hidden = false;
+        hint.textContent = touch ? "No motion data. Drag the card to tilt" : "Move your cursor to tilt";
+      }
+    }, 1500);
+  }
+
+  let pending = false, granted = false;
   async function askPermission() {
-    if (asked) return;
-    asked = true;
-    enable.hidden = true;
-    hint.hidden = false;
+    if (pending || granted) return;
+    pending = true;
     try {
+      // must be called directly inside the tap, before any other await
       const state = await DeviceOrientationEvent.requestPermission();
-      if (state === "granted") listen();
-    } catch {}
+      dbg.perm = state;
+      if (state === "granted") {
+        granted = true;
+        enable.hidden = true;
+        listen();
+        startRender();
+        expectMotion();
+      } else {
+        // Safari remembers a "Don't Allow" until the tab is closed
+        hint.hidden = false;
+        hint.textContent = "Motion blocked. Close this tab and reopen the link to allow it";
+        enable.hidden = true;
+      }
+    } catch (err) {
+      dbg.perm = "error: " + (err && err.message || err);
+      hint.hidden = false;
+      hint.textContent = "Tap the card again to turn on tilt";
+    }
+    pending = false;
+  }
+
+  let running = false;
+  function startRender() {
+    if (running) return;
+    running = true;
+    if (reduced) { x = 0; y = 0; }
+    requestAnimationFrame(render);
   }
 
   if (touch) hint.textContent = "Drag the card to tilt";
-  if (!reduced && "DeviceOrientationEvent" in window) {
-    if (typeof DeviceOrientationEvent.requestPermission === "function") {
-      // iOS shares motion data only after a tap: the button, or any tap on the card that isn't a link
-      enable.hidden = false;
-      hint.hidden = true;
-      enable.addEventListener("click", askPermission);
-      card.addEventListener("click", e => { if (!e.target.closest("a, button")) askPermission(); });
-    } else {
-      listen();
-    }
+  if ("DeviceOrientationEvent" in window && typeof DeviceOrientationEvent.requestPermission === "function") {
+    // iOS shares motion data only after a tap: the button, or any tap on the page that isn't a link
+    enable.hidden = false;
+    hint.hidden = true;
+    enable.addEventListener("click", askPermission);
+    document.querySelector(".stage").addEventListener("click", e => {
+      if (!e.target.closest("a, button")) askPermission();
+    });
+  } else if ("DeviceOrientationEvent" in window && !reduced) {
+    listen();
+    if (touch) expectMotion();
   }
   fitCheck();
 
+  // Reduce Motion: keep the card still unless the viewer turns tilt on themselves
   if (reduced) {
     hint.hidden = true;
   } else {
-    requestAnimationFrame(render);
+    startRender();
+  }
+
+  // Add ?debug to the URL to see what the browser reports
+  const dbg = { perm: "not asked", events: 0 };
+  if (/[?&]debug\b/.test(location.search)) {
+    const out = document.createElement("pre");
+    out.style.cssText = "position:fixed;left:8px;top:calc(8px + env(safe-area-inset-top,0px));margin:0;padding:8px 10px;font:11px/1.4 var(--mono);background:rgba(0,0,0,.8);color:#9f9;border-radius:8px;z-index:9;pointer-events:none;white-space:pre-wrap;max-width:calc(100% - 16px)";
+    document.body.appendChild(out);
+    let last = {};
+    addEventListener("deviceorientation", e => { dbg.events++; last = e; });
+    setInterval(() => {
+      out.textContent = [
+        "secure: " + isSecureContext,
+        "reduced motion: " + reduced,
+        "coarse pointer: " + touch,
+        "has DeviceOrientationEvent: " + ("DeviceOrientationEvent" in window),
+        "needs permission (iOS): " + (typeof window.DeviceOrientationEvent?.requestPermission === "function"),
+        "permission: " + dbg.perm,
+        "events: " + dbg.events,
+        "beta/gamma: " + (last.beta?.toFixed?.(1) ?? "-") + " / " + (last.gamma?.toFixed?.(1) ?? "-"),
+        "screen angle: " + screenAngle(),
+        "source: " + source
+      ].join("\n");
+    }, 250);
   }
 
   // Copy email
