@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, type ThreeEvent } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { projects } from '../../data/projects';
 import { Box, Cyl, Screen, Toon, ToonModel, Wire, useCanvasTexture } from './toon';
 import { CHANNEL_COLORS, CHANNEL_LABELS } from './spots';
-import { INVADER_SPRITE } from './invaders';
+import { GAME_H, GAME_W, ROW_COLORS, game } from './invadersEngine';
 
 /* ---------- room and bench ---------- */
 
@@ -120,7 +120,9 @@ export function Pegboard() {
       {/* a screwdriver on a hook, a spare board, and a coil of wire */}
       <Cyl args={[0.012, 0.012, 0.12]} color="#8E959E" position={[2.15, -0.28, 0.06]} rotation={[Math.PI / 2, 0, 0]} />
       <ToonModel url="/models/screwdriver.glb" size={0.42} position={[2.15, -0.72, 0.06]} rotation={[-Math.PI / 2, 0, 0]} />
-      <ToonModel url="/models/circuit-board.glb" size={0.5} position={[-2.08, -0.72, 0.03]} rotation={[0, 0, 0.06]} />
+      <group position={[-2.08, -0.47, 0.07]} rotation={[Math.PI / 2, 0, 0.06]} scale={0.0048}>
+        <LaunchPadKit />
+      </group>
       <mesh position={[-2.05, 0.5, 0.08]} castShadow>
         <torusGeometry args={[0.13, 0.03, 8, 20]} />
         <Toon color="#E8C547" />
@@ -346,50 +348,288 @@ export function Breadboard() {
   );
 }
 
-/* ---------- MSPM0 LaunchPad with an LCD running invaders ---------- */
+/* ---------- the Space Invaders board: custom PCB, LCD, and LP-MSPM0G3507 ---------- */
 
-export function LaunchPad() {
-  const lcd = useCanvasTexture(96, 72, (g, ms) => {
-    g.fillStyle = '#050607';
-    g.fillRect(0, 0, 96, 72);
-    const step = Math.floor(ms / 180);
-    const swing = Math.abs((step % 12) - 6);
-    const cols = ['#E8C547', '#7FD1E0', '#E07BC8'];
-    for (let r = 0; r < 3; r++) {
-      for (let c = 0; c < 5; c++) {
-        g.fillStyle = cols[r];
-        INVADER_SPRITE.forEach((row, y) => {
-          for (let x = 0; x < row.length; x++) if (row[x] === 'X') g.fillRect(8 + c * 16 + swing + x, 6 + r * 11 + y, 1, 1);
-        });
-      }
+// Everything below is modelled in millimetres, from the KiCad project (CDR3585) and
+// TI's LaunchPad user guide (SLAU873), then scaled down to bench units.
+const MM = 0.0085;
+const BOARD = { w: 114.3, d: 88.9, cx: 107.95, cz: 82.55 };
+const PCB_TOP = 21.6;
+const PCB_T = 1.6;
+const kx = (x: number) => x - BOARD.cx;
+const kz = (y: number) => y - BOARD.cz;
+
+const LP_PIN_X = [-22.86, -20.32, 20.32, 22.86];
+// The real panel is 128x160, but the bench's pixel pass can't resolve that much, so the
+// LCD draws at 3/4 size with a 7x5 version of the sprite that stays readable.
+const LCD_W = 96;
+const LCD_H = 120;
+const LCD_SPRITE = [
+  ['.X...X.', '..XXX..', '.XXXXX.', 'XX.X.XX', 'X.X.X.X'],
+  ['.X...X.', '..XXX..', '.XXXXX.', 'XX.X.XX', '.X...X.'],
+];
+
+function LaunchPadSilk() {
+  return useCanvasTexture(224, 416, (g) => {
+    g.fillStyle = '#C21F2B';
+    g.fillRect(0, 0, 224, 416);
+    g.strokeStyle = '#A41822';
+    g.lineWidth = 1;
+    for (let i = 0; i < 14; i++) {
+      g.beginPath();
+      g.moveTo(60 + i * 8, 60);
+      g.lineTo(60 + i * 8, 150 + (i % 3) * 8);
+      g.lineTo(110 + i * 4, 190);
+      g.lineTo(110 + i * 4, 330);
+      g.stroke();
     }
-    const px = Math.round(48 + Math.sin(step * 0.35) * 24);
-    g.fillStyle = '#EDEFF2';
-    g.fillRect(px - 4, 64, 9, 3);
-    g.fillRect(px - 1, 62, 3, 2);
-    if (step % 4 < 2) {
-      g.fillStyle = '#FFFFFF';
-      g.fillRect(px, 44 + (step % 4) * 8, 1, 4);
-    }
-  }, 180);
+    g.strokeStyle = '#F5F5F0';
+    g.setLineDash([4, 3]);
+    g.beginPath();
+    g.moveTo(0, 158);
+    g.lineTo(224, 158);
+    g.stroke();
+    g.setLineDash([]);
+    g.fillStyle = '#F5F5F0';
+    g.font = 'bold 13px monospace';
+    g.fillText('LP-MSPM0G3507', 62, 206);
+    g.font = 'bold 9px monospace';
+    g.fillText('XDS110-ET', 150, 40);
+    g.fillText('MSPM0G3507', 76, 290);
+    g.fillText('RGB', 72, 402);
+    g.fillText('LIGHT', 170, 402);
+  }, null);
+}
+
+// LP-MSPM0G3507, from Figure 2-1 of the user guide and the KiCad footprint. The origin
+// is the footprint origin; the bottom of the board sits at y = 0.
+function LaunchPadKit() {
+  const silk = LaunchPadSilk();
+  const pins = useRef<THREE.InstancedMesh>(null);
+  useLayoutEffect(() => {
+    const m = new THREE.Matrix4();
+    let i = 0;
+    LP_PIN_X.forEach((x) => {
+      for (let n = 0; n < 10; n++) pins.current?.setMatrixAt(i++, m.makeTranslation(x, 4.8, -2.54 + n * 2.54));
+    });
+    if (pins.current) pins.current.instanceMatrix.needsUpdate = true;
+  }, []);
+  const part = (x: number, y: number, w: number, d: number, h: number, color: string) => (
+    <Box args={[w, h, d]} color={color} position={[x, PCB_T + h / 2, y]} />
+  );
 
   return (
     <group>
-      <Box args={[0.95, 0.03, 0.52]} color="#C7303A" position={[0, 0.015, 0]} />
-      {Array.from({ length: 10 }, (_, i) => (
-        <group key={i}>
-          <Box args={[0.035, 0.07, 0.035]} color="#15171A" position={[-0.38 + i * 0.05, 0.065, -0.23]} />
-          <Box args={[0.035, 0.07, 0.035]} color="#15171A" position={[-0.38 + i * 0.05, 0.065, 0.23]} />
+      <Box args={[55.88, PCB_T, 104.14]} color="#FFFFFF" map={silk} position={[0, PCB_T / 2, -1.27]} />
+      {/* debug side: Micro-B USB, reset button, XDS110 */}
+      {part(-19.7, -51, 8, 6, 3, '#C9CED6')}
+      {part(17.8, -50.5, 7.6, 5.6, 3.4, '#E6E6E6')}
+      {part(-11, -33, 13, 13, 1.4, '#17191C')}
+      {part(10, -38, 4.5, 4.5, 1, '#17191C')}
+      {part(14, -24.5, 6, 5, 1.2, '#17191C')}
+      {/* J101 isolation block, with its row of jumpers */}
+      {part(-6, -17.2, 21.5, 4.6, 2.4, '#15171A')}
+      {Array.from({ length: 9 }, (_, i) => (
+        <Box key={i} args={[1.9, 2, 4]} color={i < 3 ? '#E8C547' : '#23262B'} position={[-15.5 + i * 2.38, PCB_T + 3.2, -17.2]} />
+      ))}
+      {/* S1 and S2 on the board edges */}
+      {part(-26, -7.6, 3.8, 5, 3, '#E6E6E6')}
+      {part(26, -7.6, 3.8, 5, 3, '#E6E6E6')}
+      {/* MSPM0G3507, the target */}
+      {part(2.2, 7.8, 12, 12, 1.4, '#17191C')}
+      <Box args={[1, 0.1, 1]} color="#8E959E" position={[-2.6, PCB_T + 1.45, 3]} />
+      {part(-14, 25, 8.5, 6.5, 1.6, '#23262B')}
+      {part(-22, 42, 4.8, 4, 1.2, '#17191C')}
+      {/* RGB LED, red LED, pullup jumper, light sensor, QEI and extension header */}
+      {part(-5.6, 38.8, 6, 6, 1.6, '#F2F2F2')}
+      {part(1.8, 39, 2, 5, 1, '#E0453A')}
+      {part(7.8, 40, 5, 7.5, 3, '#15171A')}
+      {part(16, 39, 6.5, 6.5, 1.4, '#3A3D44')}
+      {part(26, 34.5, 2.6, 13, 2.4, '#15171A')}
+      {part(2.8, 48.4, 39, 4.8, 0.4, '#D6B25C')}
+      {/* BoosterPack headers: male pins on top, sockets underneath */}
+      {[-21.59, 21.59].map((x) => (
+        <group key={x}>
+          <Box args={[5.08, 2.5, 25.4]} color="#15171A" position={[x, PCB_T + 1.25, 8.89]} />
+          <Box args={[5.08, 8.5, 25.4]} color="#15171A" position={[x, -4.25, 8.89]} />
         </group>
       ))}
-      <Box args={[0.5, 0.02, 0.4]} color="#1D3F7A" position={[0.12, 0.11, 0]} />
-      <Box args={[0.42, 0.012, 0.32]} color="#0E0F11" position={[0.12, 0.126, 0]} />
-      <Screen size={[0.38, 0.285]} texture={lcd} position={[0.12, 0.133, 0]} rotation={[-Math.PI / 2, 0, 0]} />
-      <Box args={[0.1, 0.04, 0.08]} color="#C9CED6" position={[-0.45, 0.05, 0]} />
-      <Box args={[0.1, 0.012, 0.1]} color="#1F2226" position={[-0.25, 0.036, -0.08]} />
-      {[-0.3, -0.2].map((x) => (
-        <Cyl key={x} args={[0.022, 0.022, 0.02]} color="#E6E6E6" position={[x, 0.04, 0.12]} />
+      <instancedMesh ref={pins} args={[undefined, undefined, 40]} castShadow>
+        <boxGeometry args={[0.64, 9.6, 0.64]} />
+        <Toon color="#D6B25C" />
+      </instancedMesh>
+    </group>
+  );
+}
+
+function ThumbStick({ x, y }: { x: number; y: number }) {
+  return (
+    <group position={[kx(x), PCB_TOP, kz(y)]}>
+      <Cyl args={[10.5, 11.5, 7, 8]} color="#2A2D33" position={[0, 3.5, 0]} />
+      <Cyl args={[2.6, 3.4, 6]} color="#3A3D44" position={[0, 9.5, 0]} />
+      <Cyl args={[8.5, 8, 3.4]} color="#17191C" position={[0, 13.5, 0]} />
+    </group>
+  );
+}
+
+// The four tact switches, centred on their footprints, and what each does in the game.
+const BOARD_BUTTONS = [
+  { id: 'SW1', x: 142.5, y: 72, action: 'fire' },
+  { id: 'SW2', x: 132, y: 81, action: 'left' },
+  { id: 'SW3', x: 143, y: 88.5, action: 'fire' },
+  { id: 'SW4', x: 152.5, y: 80.5, action: 'right' },
+] as const;
+
+const SW_CAP_TOP = 6.6;
+const SW_TRAVEL = 1.1;
+
+// A clickable switch. While the game is open it drives the game; otherwise a click falls
+// through and opens the panel like the rest of the board. The cap also dips for key
+// presses and the panel's on-screen controls, since they all press the same inputs.
+function BoardButton({ x, y, action, playing }: { x: number; y: number; action: 'fire' | 'left' | 'right'; playing: boolean }) {
+  const cap = useRef<THREE.Mesh>(null);
+
+  useFrame(() => {
+    if (!cap.current) return;
+    const down = action === 'fire' ? performance.now() - game.firedAt < 140 : game.input[action];
+    cap.current.position.y = SW_CAP_TOP - 1 - (down ? SW_TRAVEL : 0);
+  });
+
+  const press = (e: ThreeEvent<PointerEvent>) => {
+    if (!playing) return;
+    e.stopPropagation();
+    if (action === 'fire') {
+      game.fire();
+      return;
+    }
+    game.input[action] = true;
+    const release = () => {
+      game.input[action] = false;
+      window.removeEventListener('pointerup', release);
+      window.removeEventListener('pointercancel', release);
+    };
+    window.addEventListener('pointerup', release);
+    window.addEventListener('pointercancel', release);
+  };
+
+  return (
+    <group position={[kx(x), PCB_TOP, kz(y)]}>
+      <mesh ref={cap} position={[0, SW_CAP_TOP - 1, 0]} castShadow>
+        <cylinderGeometry args={[2, 2, 2, 12]} />
+        <Toon color="#2B2E34" />
+      </mesh>
+      {/* a generous, invisible hit area: the real caps are tiny at this scale */}
+      <mesh visible={false} position={[0, 4, 0]} onPointerDown={press}>
+        <boxGeometry args={[9.5, 8, 9.5]} />
+      </mesh>
+    </group>
+  );
+}
+
+// PCB traces and silk are baked into a texture from the KiCad layers; the through-hole
+// parts come from the KiCad export. KiCad has no 3D model for the joysticks or the
+// slide pot, and its LCD model doesn't line up with the footprint, so those are built here.
+function CustomBoard({ playing }: { playing: boolean }) {
+  const top = useTexture('/lab/custom-pcb-top.png', (t) => {
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 4;
+  });
+  const knob = useRef<THREE.Mesh>(null);
+
+  // The running game. Its coordinates are mapped to fit the portrait screen, with
+  // sprites drawn at the LCD's own pixel size.
+  const lcd = useCanvasTexture(LCD_W, LCD_H, (g) => {
+    game.tick(performance.now());
+    const sx = LCD_W / GAME_W;
+    const sy = LCD_H / GAME_H;
+    const label = (t: string, x: number, y: number, size: number, color: string, align: CanvasTextAlign = 'center') => {
+      g.fillStyle = color;
+      g.font = `bold ${size}px monospace`;
+      g.textAlign = align;
+      g.fillText(t, x, y);
+    };
+    g.fillStyle = '#050607';
+    g.fillRect(0, 0, LCD_W, LCD_H);
+    label(`${game.score}`, 3, 9, 8, '#C9CED6', 'left');
+    label(`x${game.lives}`, LCD_W - 3, 9, 8, '#C9CED6', 'right');
+    game.invaders.forEach((inv) => {
+      if (!inv.alive) return;
+      g.fillStyle = ROW_COLORS[inv.row];
+      LCD_SPRITE[game.frame].forEach((row, y) => {
+        for (let x = 0; x < row.length; x++) {
+          if (row[x] === 'X') g.fillRect(Math.round(inv.x * sx) + x, Math.round(inv.y * sy) + y, 1, 1);
+        }
+      });
+    });
+    const px = Math.round(game.px * sx);
+    const shipY = Math.round((GAME_H - 18) * sy);
+    g.fillStyle = '#EDEFF2';
+    g.fillRect(px - 4, shipY, 9, 3);
+    g.fillRect(px - 1, shipY - 2, 3, 2);
+    g.fillStyle = '#FFFFFF';
+    game.shots.forEach((s) => g.fillRect(Math.round(s.x * sx), Math.round(s.y * sy), 1, 3));
+    g.fillStyle = '#FF7A66';
+    game.bombs.forEach((b) => g.fillRect(Math.round(b.x * sx), Math.round(b.y * sy), 1, 3));
+    g.fillStyle = '#2E7D5B';
+    g.fillRect(0, Math.round((GAME_H - 8) * sy), LCD_W, 1);
+
+    const banner = game.state === 'ready' ? (['SPACE INVADERS', '#E8C547'] as const)
+      : game.state === 'over' ? (['GAME OVER', '#FF7A66'] as const)
+      : game.state === 'win' ? (['BOARD CLEARED', '#9BE07B'] as const)
+      : game.paused ? (['PAUSED', '#EDEFF2'] as const) : null;
+    if (banner) label(banner[0], LCD_W / 2, 78, 10, banner[1]);
+  }, 50);
+
+  // The original firmware steered the ship with the slide pot, so its knob follows the ship.
+  useFrame(() => {
+    if (knob.current) knob.current.position.x = kx(107.1) + (game.px / GAME_W - 0.5) * 22;
+  });
+
+  return (
+    <group>
+      <Box args={[BOARD.w, PCB_T, BOARD.d]} color="#FFFFFF" map={top} position={[0, PCB_TOP - PCB_T / 2, 0]} />
+      <ToonModel url="/models/custom-pcb-parts.glb" scale={1000} position={[0, PCB_TOP, 0]} />
+
+      {/* slide pot and the two joysticks */}
+      <Box args={[35.4, 6, 9]} color="#23262B" position={[kx(107.1), PCB_TOP + 3, kz(119.85)]} />
+      <Box args={[24, 0.2, 1.4]} color="#050607" position={[kx(107.1), PCB_TOP + 6.05, kz(119.85)]} />
+      <mesh ref={knob} position={[kx(107.1), PCB_TOP + 8, kz(119.85)]} castShadow>
+        <boxGeometry args={[4, 5, 5]} />
+        <Toon color="#D9DCE1" />
+      </mesh>
+      <ThumbStick x={71.8} y={110.6} />
+      <ThumbStick x={146.3} y={109.1} />
+
+      {BOARD_BUTTONS.map((b) => (
+        <BoardButton key={b.id} {...b} playing={playing} />
       ))}
+
+      {/* ST7735R LCD on its 8-pin header, with the panel over the footprint's display area */}
+      <group position={[kx(107), PCB_TOP, kz(77)]}>
+        <Box args={[20.32, 9, 2.54]} color="#15171A" position={[-2.54, 4.5, 25.4]} />
+        {([[-14.6, -25.4], [14.6, -25.4], [-14.6, 25.4], [14.6, 25.4]] as const).map(([x, z]) => (
+          <Cyl key={`${x}${z}`} args={[1.4, 1.4, 9, 8]} color="#D6B25C" position={[x, 4.5, z]} />
+        ))}
+        <Box args={[34.29, 1.6, 55.88]} color="#1C1F24" position={[0, 9.8, 0]} />
+        <Box args={[30.5, 2.6, 41.9]} color="#0E0F11" position={[0, 11.9, 0.63]} />
+        <Screen size={[28, 35]} texture={lcd} position={[0, 13.25, 0.63]} rotation={[-Math.PI / 2, 0, 0]} />
+      </group>
+
+      {/* the LaunchPad plugs in from underneath. The footprint is on the back side, so the
+          LaunchPad's top faces the bench: flipped, then turned so its USB end is at the left */}
+      <group position={[kx(109.04), 11, kz(88.64)]} rotation={[0, -Math.PI / 2, 0]}>
+        <group rotation={[Math.PI, 0, 0]}>
+          <LaunchPadKit />
+        </group>
+      </group>
+    </group>
+  );
+}
+
+export function LaunchPad({ playing }: { playing: boolean }) {
+  return (
+    <group scale={MM}>
+      <CustomBoard playing={playing} />
     </group>
   );
 }
@@ -506,8 +746,8 @@ export function Props() {
       <Cyl args={[0.04, 0.04, 0.075]} color="#2A2D33" position={[-0.95, 1.05, -0.95]} />
       <ToonModel url="/models/soldering-station.glb" size={0.62} position={[-3.0, 1.012, 0.5]} rotation={[0, 0.9, 0]} />
       <ToonModel url="/models/multimeter.glb" size={0.38} position={[-0.25, 1.012, 1.35]} rotation={[0, -Math.PI / 2 - 0.25, 0]} />
-      <Wire points={[[-0.18, 1.06, 1.22], [-0.05, 1.05, 0.95], [0.08, 1.05, 0.75], [0.14, 1.1, 0.62]]} color="#D94A3D" radius={0.009} />
-      <Wire points={[[-0.12, 1.06, 1.26], [0.12, 1.05, 1.05], [0.25, 1.1, 0.88]]} color="#1F2226" radius={0.009} />
+      <Wire points={[[-0.18, 1.06, 1.22], [-0.02, 1.05, 1.08], [0.14, 1.14, 1.0], [0.22, 1.26, 0.925]]} color="#D94A3D" radius={0.009} />
+      <Wire points={[[-0.12, 1.06, 1.26], [0.06, 1.05, 1.14], [0.2, 1.14, 1.03], [0.245, 1.26, 0.92]]} color="#1F2226" radius={0.009} />
       <ToonModel url="/models/headphones.glb" size={0.3} position={[1.35, 1.012, 1.2]} rotation={[0, -0.5, 0]} />
       <ToonModel url="/models/toolbox.glb" size={0.6} position={[2.85, 1.012, -0.1]} rotation={[0, 1.25, 0]} />
       <ToonModel url="/models/desk-lamp.glb" size={0.95} position={[-2.55, 1.012, -1.15]} rotation={[0, 0.55, 0]} />

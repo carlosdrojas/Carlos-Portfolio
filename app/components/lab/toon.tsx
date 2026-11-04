@@ -125,7 +125,8 @@ export function useCanvasTexture(width: number, height: number, draw: Draw, inte
 
 // Loads a .glb from /public/models, swaps its materials for the banded toon look,
 // and scales it so its largest side is `size` with its base resting at y = 0.
-export function ToonModel({ url, size, position, rotation }: { url: string; size: number; position?: Vec3; rotation?: Vec3 }) {
+// With `size` left out, the model keeps its own origin and is only scaled by `scale`.
+export function ToonModel({ url, size, scale = 1, position, rotation }: { url: string; size?: number; scale?: number; position?: Vec3; rotation?: Vec3 }) {
   const { scene } = useGLTF(url);
   const hot = useContext(HotContext);
   const { object, materials } = useMemo(() => {
@@ -133,7 +134,7 @@ export function ToonModel({ url, size, position, rotation }: { url: string; size
     const box = new THREE.Box3().setFromObject(root);
     const dims = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    root.position.set(-center.x, -box.min.y, -center.z);
+    if (size != null) root.position.set(-center.x, -box.min.y, -center.z);
     const mats: THREE.MeshToonMaterial[] = [];
     const toToon = (m: THREE.Material) => {
       const src = m as THREE.MeshStandardMaterial;
@@ -150,9 +151,9 @@ export function ToonModel({ url, size, position, rotation }: { url: string; size
     });
     const wrap = new THREE.Group();
     wrap.add(root);
-    wrap.scale.setScalar(size / Math.max(dims.x, dims.y, dims.z));
+    wrap.scale.setScalar(size != null ? size / Math.max(dims.x, dims.y, dims.z) : scale);
     return { object: wrap, materials: mats };
-  }, [scene, size]);
+  }, [scene, size, scale]);
 
   useEffect(() => {
     materials.forEach((m) => {
@@ -175,6 +176,6 @@ export const MODEL_URLS = [
   '/models/headphones.glb',
   '/models/soda-can.glb',
   '/models/screwdriver.glb',
-  '/models/circuit-board.glb',
+  '/models/custom-pcb-parts.glb',
 ];
 MODEL_URLS.forEach((u) => useGLTF.preload(u));

@@ -1,4 +1,4 @@
-// 11x8 invader sprite shared by the LaunchPad screen and the playable game.
+// 11x8 invader sprite drawn by the game panel.
 export const INVADER_SPRITE = [
   '..X.....X..',
   '...X...X...',

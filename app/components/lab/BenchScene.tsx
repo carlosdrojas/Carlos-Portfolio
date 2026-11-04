@@ -31,7 +31,7 @@ export default function BenchScene({ active, hovered, onHover, onSelect, reduceM
   };
 
   const spot = (id: SpotId, position: [number, number, number], rotationY: number, children: ReactNode) => (
-    <Hotspot id={id} groupRef={refs[id]} position={position} rotationY={rotationY} hot={hovered === id} onHover={onHover} onSelect={onSelect}>
+    <Hotspot id={id} groupRef={refs[id]} position={position} rotationY={rotationY} hot={hovered === id && active !== id} onHover={onHover} onSelect={onSelect}>
       {children}
     </Hotspot>
   );
@@ -65,7 +65,7 @@ export default function BenchScene({ active, hovered, onHover, onSelect, reduceM
         {spot('laptop', [-1.75, 1.012, 0.35], 0.38, <Laptop />)}
         {spot('phone', [-0.85, 1.012, 1.12], 0.35, <Phone />)}
         {spot('scope', [1.75, 1.012, -0.72], -0.38, <Oscilloscope />)}
-        {spot('launchpad', [0.5, 1.012, 0.62], -0.18, <LaunchPad />)}
+        {spot('launchpad', [0.5, 1.012, 0.62], -0.18, <LaunchPad playing={active === 'launchpad'} />)}
         {spot('clipboard', [2.1, 1.012, 0.78], -0.42, <Clipboard />)}
         <group position={[-0.05, 1.012, -0.42]}>
           <Breadboard />
