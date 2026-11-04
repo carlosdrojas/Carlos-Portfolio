@@ -7,7 +7,7 @@ export const SPOTS: Record<SpotId, { name: string; role: string; title: string; 
   laptop: { name: 'Laptop', role: 'Shell', title: 'Yash', sub: 'A browser copy of the Unix shell I wrote in C. Type help.' },
   phone: { name: 'Phone', role: 'About me', title: 'About me', sub: 'Where I’m from and how I got here.' },
   scope: { name: 'Oscilloscope', role: 'Experience', title: 'Experience', sub: 'One channel per role, newest first.' },
-  launchpad: { name: 'LaunchPad', role: 'Play', title: 'Space Invaders', sub: 'The original runs in C and Assembly on this board.' },
+  launchpad: { name: 'LaunchPad', role: 'Play', title: 'Space Invaders', sub: 'The original runs in C and Assembly on an MSPM0 LaunchPad, plugged into a custom PCB.' },
   clipboard: { name: 'Clipboard', role: 'Resume and contact', title: 'Resume and contact', sub: 'Skills, resume, and how to reach me.' },
 };
 
@@ -17,7 +17,7 @@ export const VIEWS: Record<SpotId, { pos: [number, number, number]; look: [numbe
   laptop: { pos: [0, 0.85, 1.6], look: [0, 0.42, -0.5] },
   phone: { pos: [0, 0.95, 0.4], look: [0, 0.01, 0] },
   scope: { pos: [0, 0.7, 2.9], look: [0, 0.45, 0.4] },
-  launchpad: { pos: [0.1, 1.3, 0.7], look: [0.1, 0.1, 0] },
+  launchpad: { pos: [0.06, 1.45, 1.2], look: [0.06, 0.1, 0.02] },
   clipboard: { pos: [0, 1.55, 0.6], look: [0, 0.02, 0.02] },
 };
 
