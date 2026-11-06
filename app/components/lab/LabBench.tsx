@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { SPOTS, SPOT_ORDER, type SpotId } from './spots';
@@ -13,7 +13,25 @@ const BenchScene = dynamic(() => import('./BenchScene'), {
 
 const card = 'bg-[#F7F5F0] text-[#1D2127] border-2 border-[#1D2127] shadow-[4px_4px_0_#1D2127]';
 
+// The 3D scene can fail on its own (no WebGL, a failed download), and the rest of the page doesn't need it.
+class SceneBoundary extends Component<{ onError: () => void; children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch() {
+    this.props.onError();
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 export default function LabBench() {
+  const [sceneFailed, setSceneFailed] = useState(false);
   const [active, setActive] = useState<SpotId | null>(null);
   const [hovered, setHovered] = useState<SpotId | null>(null);
   const [visited, setVisited] = useState(false);
@@ -97,8 +115,16 @@ export default function LabBench() {
   return (
     <div className="fixed inset-0 overflow-hidden bg-[#2A2E35] font-sans" onPointerMove={onPointerMove} onPointerLeave={() => setPointerOnScene(false)}>
       <div className="absolute inset-0" aria-hidden="true">
-        <BenchScene active={active} hovered={hovered} onHover={setHovered} onSelect={select} reduceMotion={reduceMotion} />
+        <SceneBoundary onError={() => setSceneFailed(true)}>
+          <BenchScene active={active} hovered={hovered} onHover={setHovered} onSelect={select} reduceMotion={reduceMotion} />
+        </SceneBoundary>
       </div>
+
+      {sceneFailed && !active && (
+        <p className="absolute inset-0 flex items-center justify-center px-6 text-center text-[#E8E4DA]">
+          This browser can’t show the 3D bench. Use the buttons below to open each part.
+        </p>
+      )}
 
       <header className={`${card} absolute left-4 top-[calc(16px+env(safe-area-inset-top,0px))] max-w-[calc(100%-32px)] px-4 py-3 ${active ? 'max-sm:hidden' : ''}`}>
         <h1 className="font-pixel text-xl sm:text-2xl leading-none">Carlos Rojas</h1>
@@ -108,7 +134,7 @@ export default function LabBench() {
         </Link>
       </header>
 
-      {!visited && (
+      {!visited && !sceneFailed && (
         <p className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-[calc(96px+env(safe-area-inset-bottom,0px))] whitespace-nowrap bg-[#151A21]/80 px-3 py-1.5 font-pixel text-sm text-[#F2EFE8]">
           {touch ? 'Tap anything on the bench' : 'Click anything on the bench'}
         </p>
