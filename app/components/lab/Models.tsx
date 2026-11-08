@@ -207,7 +207,7 @@ export function Oscilloscope() {
   const screen = useCanvasTexture(384, 272, (g, ms) => {
     const W = 384;
     const H = 272;
-    const rowH = 76;
+    const rowH = (H - 44) / CHANNEL_LABELS.length;
     g.fillStyle = '#0B1016';
     g.fillRect(0, 0, W, H);
     g.fillStyle = 'rgba(160,180,200,0.16)';
@@ -215,17 +215,19 @@ export function Oscilloscope() {
     for (let j = 1; j < 8; j++) g.fillRect(0, Math.round((j * (H - 30)) / 8), W, 1);
 
     CHANNEL_LABELS.forEach((label, i) => {
-      const color = CHANNEL_COLORS[i];
+      const color = CHANNEL_COLORS[i % CHANNEL_COLORS.length];
       const mid = 8 + i * rowH + rowH / 2;
       const period = 3200;
       const t = ((ms + i * 700) % period) / period;
       const beam = Math.min(W, t * W * 1.25);
       g.font = 'bold 44px monospace';
+      const fontSize = Math.min(44, rowH * 0.6, 44 * (W - 64) / g.measureText(label).width);
+      g.font = `bold ${fontSize}px monospace`;
       const textW = g.measureText(label).width;
       const textX = 52;
       const wave = (x: number) => {
         if (x >= textX - 6 && x <= textX + textW + 6) return mid;
-        const k = [0.25, 0.16, 0.1][i];
+        const k = [0.25, 0.16, 0.1][i % 3];
         if (i === 0) return mid + (Math.sin(x * k) > 0 ? -9 : 9);
         if (i === 1) return mid + Math.sin(x * k) * 10;
         return mid + ((((x * k) / (Math.PI * 2)) % 1) * 20 - 10);
@@ -245,7 +247,7 @@ export function Oscilloscope() {
         }
         g.stroke();
         g.lineWidth = 3;
-        g.strokeText(label, textX, mid + 15);
+        g.strokeText(label, textX, mid + fontSize / 3);
         g.restore();
       };
       drawRow(W, 0.18);
@@ -265,7 +267,7 @@ export function Oscilloscope() {
     g.fillRect(0, H - 30, W, 30);
     g.font = '13px monospace';
     g.fillStyle = '#9FB0C2';
-    g.fillText('EXPERIENCE  3 CH  NEWEST FIRST', 8, H - 11);
+    g.fillText(`EXPERIENCE  ${CHANNEL_LABELS.length} CH  NEWEST FIRST`, 8, H - 11);
   }, 60);
 
   return (
@@ -276,8 +278,8 @@ export function Oscilloscope() {
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <Cyl key={i} args={[0.05, 0.055, 0.05]} color="#9098A3" position={[0.34 + (i % 2) * 0.18, 0.72 - Math.floor(i / 2) * 0.2, 0.45]} rotation={[Math.PI / 2, 0, 0]} />
       ))}
-      {CHANNEL_COLORS.map((c, i) => (
-        <Box key={c} args={[0.08, 0.04, 0.02]} color={c} position={[-0.52 + i * 0.14, 0.1, 0.45]} />
+      {CHANNEL_LABELS.map((label, i) => (
+        <Box key={label} args={[0.08, 0.04, 0.02]} color={CHANNEL_COLORS[i % CHANNEL_COLORS.length]} position={[-0.52 + i * 0.14, 0.1, 0.45]} />
       ))}
       {[0, 1, 2].map((j) => (
         <Cyl key={j} args={[0.025, 0.025, 0.05]} color="#C9CED6" position={[0.2 + j * 0.16, 0.1, 0.455]} rotation={[Math.PI / 2, 0, 0]} />
