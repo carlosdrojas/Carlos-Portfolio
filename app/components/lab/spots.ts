@@ -1,3 +1,5 @@
+import { experiences } from '../../data/experience';
+
 export type SpotId = 'pegboard' | 'laptop' | 'phone' | 'scope' | 'launchpad' | 'clipboard';
 
 export const SPOT_ORDER: SpotId[] = ['pegboard', 'laptop', 'phone', 'scope', 'launchpad', 'clipboard'];
@@ -22,7 +24,7 @@ export const VIEWS: Record<SpotId, { pos: [number, number, number]; look: [numbe
 };
 
 // Scope channel colors, shared by the 3D screen and the Experience panel.
-export const CHANNEL_COLORS = ['#F2D43D', '#4CC9E6', '#E870D0'];
+export const CHANNEL_COLORS = ['#F2D43D', '#4CC9E6', '#E870D0', '#7EDC8A'];
 
 // Short names the scope traces write out, in the same order as data/experience.ts.
-export const CHANNEL_LABELS = ['AMAZON', 'UT RSOC', 'UTSA'];
+export const CHANNEL_LABELS = experiences.map((experience) => (experience.shortCompany ?? experience.company).toUpperCase());

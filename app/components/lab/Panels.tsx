@@ -74,7 +74,7 @@ export function ExperiencePanel() {
           <div className="flex flex-col gap-1.5">
             <h3 className="font-pixel text-lg leading-tight">{e.title}</h3>
             <p className="text-sm font-semibold text-[#2F6470]">{e.company}</p>
-            <p className="text-sm text-[#5B6270]">{e.duration}. {e.location}.</p>
+            <p className="text-sm text-[#5B6270]">{e.duration}.{e.location && ` ${e.location}.`}</p>
             <p className="text-sm leading-relaxed">{e.description}</p>
             {e.achievements && (
               <ul className="list-disc pl-5 text-sm leading-relaxed flex flex-col gap-1">

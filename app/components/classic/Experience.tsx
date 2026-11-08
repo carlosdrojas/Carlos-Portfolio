@@ -45,14 +45,16 @@ export default function Experience() {
                       darkTile ? 'bg-[#1d1d1f] dark:bg-[#2c2c2e]' : 'bg-white shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]'
                     }`}
                   >
-                    {exp.logo && (
+                    {exp.logo ? (
                       <Image src={exp.logo} alt="" width={76} height={76} className="h-[38px] w-[38px] object-contain" />
+                    ) : (
+                      <span aria-hidden="true" className="text-2xl font-semibold text-[#1d1d1f]">{exp.company.charAt(0)}</span>
                     )}
                   </span>
                   <span className="flex min-w-0 flex-auto flex-col gap-[3px]">
                     <span className="text-[17px] font-semibold tracking-[-0.01em] text-(--c-ink) sm:text-[21px]">{exp.title}</span>
                     <span className="text-[14px] text-(--c-sub) sm:text-[15px]">
-                      {exp.company} · {exp.location}
+                      {exp.company}{exp.location && ` · ${exp.location}`}
                     </span>
                     <span className="text-[14px] tabular-nums text-(--c-sub) sm:hidden">{exp.duration}</span>
                   </span>

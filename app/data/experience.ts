@@ -2,7 +2,8 @@ export interface Experience {
   id: number;
   title: string;
   company: string;
-  location: string;
+  shortCompany?: string;
+  location?: string;
   duration: string;
   description: string;
   technologies?: string[];
@@ -12,6 +13,20 @@ export interface Experience {
 }
 
 export const experiences: Experience[] = [
+  {
+    id: 4,
+    title: "Software Engineer",
+    company: "Debatable",
+    duration: "October 2026 - Present",
+    description: "Spearheaded Debatable 2.0, defining the spec and building the AWS platform to migrate a live product with 5,000+ users off Netlify.",
+    technologies: ["AWS CDK", "AWS Fargate", "Application Load Balancer", "GitHub Actions", "OpenID Connect"],
+    achievements: [
+      "Built the AWS CDK stack on Fargate behind an internal Application Load Balancer, with 21 infrastructure tests running in CI on every pull request",
+      "Migrated Debatable from Netlify to AWS, cutting monthly hosting costs from $340 to $120 (about 65%)",
+      "Set up CI/CD with GitHub Actions OpenID Connect, a migration step on the new image, and a /v1/version verification gate, cutting deploy time from 12 to 4 minutes"
+    ],
+    type: "work"
+  },
   {
     id: 3,
     title: "Software Development Engineer Intern",
@@ -46,6 +61,7 @@ export const experiences: Experience[] = [
     id: 1,
     title: "Machine Learning Research Intern",
     company: "UTSA Unmanned Systems Lab",
+    shortCompany: "UTSA",
     logo: "/utsa.png",
     location: "San Antonio, TX",
     duration: "January 2024 - August 2024",
